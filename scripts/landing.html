@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whitepapers — AtomGradient</title>
+<meta name="description" content="质子梯度（AtomGradient）发布的研究白皮书：Neural Imprint 与端侧持续学习。Research whitepapers from AtomGradient on on-device continual learning.">
+<link rel="canonical" href="{{BASE}}/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AtomGradient Whitepapers · 质子梯度白皮书">
+<meta property="og:description" content="质子梯度（AtomGradient）发布的研究白皮书：Neural Imprint 与端侧持续学习。">
+<meta property="og:url" content="{{BASE}}/">
+<link rel="icon" href="data:image/svg+xml,{{FAVICON}}">
+<style>
+:root{--bg:#faf9f7;--bg-nav:rgba(250,249,247,.92);--surface:#fff;--surface-2:#f0ece7;--text:#191918;--muted:#6b6b6b;--faint:#999;--border:#e8e4df;--border-light:#eae6e1;--accent:#c96442;--accent-hover:#a84e32;--shadow:0 1px 2px rgba(25,25,24,.04),0 6px 20px rgba(25,25,24,.05);
+  --font:-apple-system,system-ui,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151412;--bg-nav:rgba(21,20,18,.92);--surface:#1d1b18;--surface-2:#262320;--text:#ebe7e0;--muted:#a39d94;--faint:#7d776f;--border:#2e2a25;--border-light:#292520;--accent:#e08a66;--accent-hover:#f0a385;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#151412;--bg-nav:rgba(21,20,18,.92);--surface:#1d1b18;--surface-2:#262320;--text:#ebe7e0;--muted:#a39d94;--faint:#7d776f;--border:#2e2a25;--border-light:#292520;--accent:#e08a66;--accent-hover:#f0a385;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.75}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-hover);text-decoration:underline}
+.nav{position:sticky;top:0;z-index:60;height:56px;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0 1.5rem;background:var(--bg-nav);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.nav .brand{font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--text)}.nav .brand:hover{text-decoration:none;color:var(--accent-hover)}
+.nav .links{display:flex;gap:1.6rem;font-size:.9rem}.nav .links a{color:var(--muted)}.nav .links a:hover,.nav .links a.current{color:var(--text);text-decoration:none}
+.nav .tools{display:flex;align-items:center;gap:.6rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.84rem;cursor:pointer;font-family:inherit;line-height:1.2}
+.btn:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.lang{display:inline-flex;align-items:center;gap:.2rem;font-size:.84rem;color:var(--faint)}
+.lang button{background:none;border:0;padding:.35rem .5rem;border-radius:6px;color:var(--muted);cursor:pointer;font:inherit;font-size:.84rem}
+.lang button:hover{color:var(--text);background:var(--surface-2)}
+.lang button[aria-pressed="true"]{color:var(--text);background:var(--surface-2);font-weight:600}
+.hero{text-align:center;padding:5.5rem 1rem 4rem;max-width:44rem;margin:0 auto}
+.hero h1{font-size:3rem;line-height:1.15;letter-spacing:-.02em;margin:0 0 .8rem;font-weight:800}
+.hero .tagline{font-size:1.2rem;color:var(--muted);margin:0 0 1rem}
+.hero .desc{color:var(--muted);font-size:1rem;line-height:1.8;margin:0}
+.section{max-width:72rem;margin:0 auto;padding:1rem 1.5rem 4rem}
+.section-title{text-align:center;font-size:1.5rem;font-weight:700;margin:0 0 2rem;letter-spacing:-.01em}
+.cards{display:grid;grid-template-columns:1fr;gap:1.4rem;max-width:46rem;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.6rem 1.3rem;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(25,25,24,.05),0 14px 34px rgba(25,25,24,.08)}
+.card-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:.9rem}
+.card h3{font-size:1.25rem;line-height:1.4;margin:0 0 .6rem;font-weight:700}
+.card h3 a{color:var(--text)}
+.card .sub{color:var(--faint);font-size:.82rem;margin:0 0 .8rem}
+.card .desc{color:var(--muted);font-size:.93rem;margin:0 0 1rem}
+.card ul{list-style:none;margin:0 0 1.2rem;padding:0;font-size:.86rem;color:var(--muted);line-height:1.6}
+.card li{padding-left:1.1em;text-indent:-1.1em;margin:.3rem 0}
+.card li::before{content:"— ";color:var(--faint)}
+.card-links{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border-light);display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:.9rem;font-weight:500}
+.log{max-width:44rem;margin:0 auto;font-size:.92rem;color:var(--muted)}
+.log li{margin:.35rem 0}
+.site-footer{border-top:1px solid var(--border-light);padding:1.6rem 1.5rem;text-align:center;font-size:.82rem;color:var(--faint)}
+.site-footer a{color:var(--muted)}
+/* language switching: only the selected edition is shown */
+[data-lang="zh"] [data-lang="en"],[data-lang="en"] [data-lang="zh"]{display:none!important}
+@media (max-width:640px){.nav .links{display:none}.hero{padding:3.5rem 1rem 2.5rem}.hero h1{font-size:2.1rem}.section{padding:0 16px 3rem}.card{padding:1.3rem 1.2rem 1.1rem}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="https://atomgradient.github.io/">AtomGradient</a>
+  <nav class="links" aria-label="Site navigation">
+    <a href="https://atomgradient.github.io/#research">Research</a>
+    <a href="./" class="current">Whitepapers</a>
+    <a href="https://atomgradient.com" target="_blank" rel="noopener">Official Site</a>
+    <a href="{{REPO}}" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+  <div class="tools">
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-set-lang="zh" aria-pressed="true">中文</button><span>/</span><button type="button" data-set-lang="en" aria-pressed="false">EN</button></div>
+    <button class="btn" data-theme-toggle aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A7 7 0 0 1 12 3z"/></svg></button>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Whitepapers</h1>
+  <p class="tagline" data-lang="zh">质子梯度研究白皮书</p>
+  <p class="tagline" data-lang="en">AtomGradient research whitepapers</p>
+  <p class="desc" data-lang="zh">我们围绕端侧持续学习发布研究白皮书：研究立场、已经建立的算法与工程基础，以及下一代 Neural Imprint 的演进方向。</p>
+  <p class="desc" data-lang="en">Research whitepapers on on-device continual learning: our position, the algorithmic and engineering foundations we have established, and the direction of next-generation Neural Imprint.</p>
+</section>
+
+<section class="section" id="papers">
+  <h2 class="section-title" data-lang="zh">最新发布</h2>
+  <h2 class="section-title" data-lang="en">Latest</h2>
+  <div class="cards">
+{{CARDS}}
+  </div>
+</section>
+
+<section class="section" id="log" style="padding-top:0">
+  <h2 class="section-title" data-lang="zh">更新记录</h2>
+  <h2 class="section-title" data-lang="en">Changelog</h2>
+  <ul class="log">{{LOG}}</ul>
+</section>
+
+<footer class="site-footer">© 2026 AtomGradient · <a href="https://atomgradient.com" target="_blank" rel="noopener">Official Site</a> · <a href="https://github.com/AtomGradient" target="_blank" rel="noopener">GitHub</a> · <a href="https://huggingface.co/AtomGradient" target="_blank" rel="noopener">Hugging Face</a> · <span data-lang="zh">白皮书内容以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a> 许可发布</span><span data-lang="en">Whitepaper content is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></span></footer>
+<script>
+(function(){
+  var r=document.documentElement;
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  var t=get('wp-theme');if(t==='dark'||t==='light')r.setAttribute('data-theme',t);
+  function cur(){var t=r.getAttribute('data-theme');if(t==='dark'||t==='light')return t;return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+  document.querySelectorAll('[data-theme-toggle]').forEach(function(b){b.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark';r.setAttribute('data-theme',n);set('wp-theme',n)})});
+  function applyLang(l){r.setAttribute('data-lang',l);r.setAttribute('lang',l==='zh'?'zh-CN':'en');document.querySelectorAll('[data-set-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-set-lang')===l))})}
+  var stored=get('wp-lang');
+  var q=new URLSearchParams(location.search).get('lang');
+  var initial=(q==='en'||q==='zh')?q:(stored==='en'||stored==='zh')?stored:((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en');
+  applyLang(initial);
+  document.querySelectorAll('[data-set-lang]').forEach(function(b){b.addEventListener('click',function(){var l=b.getAttribute('data-set-lang');applyLang(l);set('wp-lang',l)})});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning — AtomGradient</title>
+<meta name="description" content="This whitepaper presents AtomGradient's research position on continual learning, the algorithmic and engineering foundations we have established, and the direction of the next generation of Neural Imprint.">
+<link rel="canonical" href="https://atomgradient.github.io/whitepapers/neural-imprint/en/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning">
+<meta property="og:description" content="This whitepaper presents AtomGradient's research position on continual learning, the algorithmic and engineering foundations we have established, and the direction of the next generation of Neural Imprint.">
+<meta property="og:url" content="https://atomgradient.github.io/whitepapers/neural-imprint/en/">
+<meta property="og:site_name" content="AtomGradient">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23c96442%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23a84e32%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%225.5%22%20fill%3D%22url(%23g)%22%2F%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2232%22%20rx%3D%2226%22%20ry%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%223%22%2F%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2232%22%20rx%3D%2226%22%20ry%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%223%22%20transform%3D%22rotate(60%2032%2032)%22%2F%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2232%22%20rx%3D%2226%22%20ry%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%223%22%20transform%3D%22rotate(120%2032%2032)%22%2F%3E%3C%2Fsvg%3E">
+<style>
+:root{
+  --bg:#faf9f7;--bg-nav:rgba(250,249,247,.92);--surface:#ffffff;--surface-2:#f0ece7;--text:#191918;--muted:#6b6b6b;--faint:#999999;
+  --border:#e8e4df;--border-light:#eae6e1;--accent:#c96442;--accent-hover:#a84e32;--accent-soft:#f7ece6;--code:#f0ece7;
+  --shadow:0 1px 2px rgba(25,25,24,.04),0 6px 20px rgba(25,25,24,.05);
+  --nav-h:56px;--sidebar:300px;--measure:46rem;
+  --font:-apple-system,system-ui,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#151412;--bg-nav:rgba(21,20,18,.92);--surface:#1d1b18;--surface-2:#262320;--text:#ebe7e0;--muted:#a39d94;--faint:#7d776f;
+    --border:#2e2a25;--border-light:#292520;--accent:#e08a66;--accent-hover:#f0a385;--accent-soft:#2d221c;--code:#221f1b;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151412;--bg-nav:rgba(21,20,18,.92);--surface:#1d1b18;--surface-2:#262320;--text:#ebe7e0;--muted:#a39d94;--faint:#7d776f;
+  --border:#2e2a25;--border-light:#292520;--accent:#e08a66;--accent-hover:#f0a385;--accent-soft:#2d221c;--code:#221f1b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--nav-h) + 12px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:17px;line-height:1.85;letter-spacing:.01em}
+a{color:var(--accent);text-decoration:none;text-underline-offset:.2em}
+a:hover{color:var(--accent-hover);text-decoration:underline}
+.skip{position:absolute;left:-999px;top:0;background:var(--surface);padding:.5rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:80;transition:width .1s linear}
+
+/* top navigation, shared with the org site */
+.nav{position:sticky;top:0;z-index:60;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0 1.5rem;background:var(--bg-nav);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.nav .brand{font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--text)}
+.nav .brand:hover{text-decoration:none;color:var(--accent-hover)}
+.nav .links{display:flex;gap:1.6rem;font-size:.9rem}
+.nav .links a{color:var(--muted)}
+.nav .links a:hover,.nav .links a.current{color:var(--text);text-decoration:none}
+.nav .tools{display:flex;gap:.45rem;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .8rem;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.84rem;cursor:pointer;font-family:inherit;line-height:1.2}
+.btn:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:#fff}
+.btn svg{width:15px;height:15px}
+.btn.icon{padding:.42rem .5rem}
+#tocBtn{display:none}
+
+/* layout */
+.shell{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:calc(100vh - var(--nav-h))}
+.sidebar{position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;border-right:1px solid var(--border-light);background:var(--bg);padding:1.6rem 1.3rem 2rem;display:flex;flex-direction:column;gap:1.2rem;scrollbar-width:thin}
+.paper-tag{font-size:.78rem;color:var(--muted);line-height:1.5}
+.paper-tag strong{color:var(--text);font-weight:600}
+.toc{font-size:.85rem;line-height:1.55}
+.toc h2{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 .6rem;font-weight:500}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:block;color:var(--muted);padding:.26rem .55rem;border-radius:6px;border-left:2px solid transparent}
+.toc a:hover{color:var(--text);background:var(--surface-2);text-decoration:none}
+.toc a.active{color:var(--accent-hover);border-left-color:var(--accent);background:var(--accent-soft)}
+.toc .l3{padding-left:1.35rem;font-size:.81rem}
+.toc .l2{font-weight:600;margin-top:.25rem}
+.sidebar .actions{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border-light);font-size:.78rem;color:var(--faint);line-height:1.6}
+
+.main{min-width:0}
+.article{max-width:var(--measure);margin:0 auto;padding:3rem 2.4rem 5rem}
+
+/* header / cover */
+.paper-header{margin-bottom:2.4rem;padding-bottom:1.6rem;border-bottom:2px solid var(--border)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+.paper-header h1{font-size:2.2rem;line-height:1.28;letter-spacing:-.01em;margin:0 0 .9rem;font-weight:800}
+.subtitle{color:var(--muted);font-size:1rem;margin:0 0 1.1rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.8rem;color:var(--muted)}
+.meta code{font-family:var(--mono);font-size:.74rem;background:var(--code);padding:.05rem .35rem;border-radius:4px}
+.header-actions{display:none;gap:.5rem;margin-top:1.2rem}
+.abstract{margin-top:1.5rem;padding-top:1.3rem;border-top:1px solid var(--border-light)}
+.abstract p{font-size:1.04rem;margin:0 0 .9em}
+.abstract p:last-child{margin-bottom:0}
+.print-toc{display:none}
+
+/* body typography, aligned with the published paper pages */
+.article h2{font-size:1.5rem;line-height:1.35;margin:3.2rem 0 1.1rem;padding-bottom:.4rem;border-bottom:2px solid var(--border);letter-spacing:-.005em;font-weight:700}
+.article h3{font-size:1.16rem;line-height:1.45;margin:2.2rem 0 .8rem;font-weight:650}
+.article h2:first-of-type{margin-top:1rem}
+.article p{margin:0 0 1.15em}
+.article strong{font-weight:650}
+.article ul,.article ol{padding-left:1.4em;margin:0 0 1.15em}
+.article li{margin:.25em 0}
+.article li::marker{color:var(--faint)}
+.article blockquote{margin:1.6em 0;padding:.8em 1.2em;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0}
+.article blockquote p:last-child{margin-bottom:0}
+.article hr{border:0;border-top:1px solid var(--border);margin:2.4rem 0}
+.article code{font-family:var(--mono);font-size:.88em;background:var(--code);padding:.08em .35em;border-radius:4px}
+.article pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.2rem;overflow-x:auto;margin:1.4em 0;line-height:1.7}
+.article pre.diagram{text-align:center;font-size:.95rem}
+.article pre code{background:none;padding:0;font-size:inherit}
+.article .table-wrap{overflow-x:auto;margin:1.4em 0;border:1px solid var(--border);border-radius:10px;background:var(--surface);-webkit-overflow-scrolling:touch}
+.article table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.6}
+.article th,.article td{padding:.65rem .85rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--border-light)}
+.article th{background:var(--surface-2);font-weight:650;white-space:nowrap}
+.article tr:last-child td{border-bottom:0}
+.article td:first-child{font-weight:600;white-space:nowrap}
+.article table.wide td:first-child{white-space:normal;min-width:6.5em}
+.article .source-note{font-size:.8rem;color:var(--faint);margin:-.4em 0 1.3em}
+.article .source-note sub{vertical-align:baseline;font-size:inherit;line-height:inherit}
+.article sub{font-size:.8em}
+.article p a,.article li a,.article td a{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.article p a:hover,.article li a:hover,.article td a:hover{text-decoration-color:var(--accent-hover)}
+.article a[href^="http"]::after{content:"↗";font-size:.7em;margin-left:.15em;vertical-align:super;opacity:.7}
+
+/* footer */
+.paper-footer{margin-top:4rem;padding-top:1.6rem;border-top:2px solid var(--border);font-size:.86rem;color:var(--muted);line-height:1.7}
+.paper-footer h2{font-size:1rem;margin:1.6rem 0 .5rem;color:var(--text);border:0;padding:0}
+.paper-footer pre{background:var(--code);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;overflow-x:auto;font-size:.78rem;line-height:1.55;font-family:var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.license{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem}
+.license .cc{display:inline-flex;gap:.25rem}
+.license .cc span{display:inline-grid;place-items:center;width:22px;height:22px;border:1.5px solid currentColor;border-radius:50%;font-size:.6rem;font-weight:700}
+.site-footer{border-top:1px solid var(--border-light);padding:1.6rem 1.5rem;text-align:center;font-size:.82rem;color:var(--faint)}
+.site-footer a{color:var(--muted)}
+.totop{position:fixed;right:1.2rem;bottom:1.2rem;width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:grid;place-items:center;box-shadow:var(--shadow);cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.totop.show{opacity:1;pointer-events:auto}
+.watermark{display:none}
+.cover-org{display:none}
+.scrim{display:none}
+
+/* responsive */
+@media (max-width:1023px){
+  .nav{padding:0 1rem}
+  .nav .links{display:none}
+  #tocBtn{display:inline-flex}
+  .btn .label{display:none}
+  .shell{display:block}
+  .sidebar{position:fixed;top:var(--nav-h);left:0;bottom:0;height:auto;z-index:70;transform:translateX(-105%);transition:transform .25s ease;width:min(86vw,360px);box-shadow:var(--shadow);background:var(--surface)}
+  .sidebar.open{transform:none}
+  .scrim{display:block;position:fixed;inset:var(--nav-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .article{padding:1.8rem 16px 4rem}
+  .paper-header h1{font-size:1.65rem}
+  .header-actions{display:flex;flex-wrap:wrap}
+  body{font-size:16.5px}
+  .article h2{font-size:1.36rem;margin-top:2.6rem}
+  .article h3{font-size:1.1rem}
+  .article th,.article td{padding:.55rem .65rem}
+}
+@media (min-width:1024px) and (max-width:1279px){:root{--sidebar:260px}}
+
+/* print */
+@media print{
+  @page{size:A4;margin:22mm 18mm 20mm 18mm}
+  html{scroll-behavior:auto}
+  body{background:#fff;color:#191918;font-size:10.8pt;line-height:1.72;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .progress,.nav,.sidebar,.scrim,.totop,.header-actions,.site-footer{display:none!important}
+  .shell{display:block}
+  .article{max-width:none;padding:0;margin:0}
+  .paper-header{border:0;margin:0;padding:0;height:243mm;display:flex;flex-direction:column;justify-content:flex-start;padding-top:38mm;break-after:page;page-break-after:always}
+  .paper-header .eyebrow{font-size:8.5pt;color:#6b6b6b}
+  .paper-header h1{font-size:26pt;line-height:1.3;margin:0 0 12pt;color:#191918}
+  .paper-header .subtitle{font-size:12pt;color:#444}
+  .paper-header .meta{font-size:9pt;color:#6b6b6b;margin-top:14pt}
+  .abstract{margin-top:18pt;padding-top:14pt;border-top:1px solid #e8e4df}
+  .abstract p{font-size:10.5pt;color:#333;line-height:1.7}
+  .cover-org{display:block!important;margin-top:auto;padding-top:24pt;border-top:1px solid #e8e4df;font-size:9.5pt;color:#444;line-height:1.6}
+  .print-toc{display:block;break-after:page;page-break-after:always}
+  .print-toc h2{font-size:16pt;margin:0 0 9pt;border:0;padding:0}
+  .print-toc ol{list-style:none;margin:0;padding:0;columns:2;column-gap:9mm}
+  .print-toc li{margin:0;line-height:1.34;break-inside:avoid}
+  .print-toc li.l2{font-weight:650;margin-top:4.5pt;font-size:9.2pt}
+  .print-toc li.l3{padding-left:11pt;font-size:8.3pt;color:#333}
+  .article .print-toc li a{color:#191918;text-decoration:none}
+  .article .print-toc li.l3 a{color:#333}
+  .article h2{font-size:16pt;margin:26pt 0 10pt;padding:0 0 4pt;border-bottom:1.5px solid #e8e4df;break-after:avoid;break-inside:avoid;page-break-inside:avoid;page-break-after:avoid}
+  .article h2#appendix-a{break-before:page;page-break-before:always;margin-top:0}
+  .article h3{font-size:12.5pt;margin:16pt 0 6pt;break-after:avoid;break-inside:avoid;page-break-inside:avoid;page-break-after:avoid}
+  .article p strong:only-child{break-after:avoid}
+  .article p,.article li{orphans:3;widows:3}
+  .article blockquote{background:#f0ece7;border-left-color:#c96442;break-inside:avoid}
+  .article .table-wrap{overflow:visible;border-color:#e8e4df;background:#fff}
+  .article table{font-size:9pt;line-height:1.5}
+  .article th{background:#f0ece7}
+  .article tr{break-inside:avoid}
+  .article th,.article td{border-bottom-color:#eae6e1}
+  .article pre{background:#f0ece7;border-color:#e8e4df;break-inside:avoid}
+  .article .source-note{color:#6b6b6b;font-size:8.5pt}
+  .article a{color:#a84e32;text-decoration:none}
+  .article a[href^="http"]::after{content:""}
+  .paper-footer{border-top-color:#e8e4df;color:#555;font-size:9pt;break-before:page;page-break-before:always}
+  .paper-footer h2{break-before:auto;page-break-before:auto;font-size:11pt;border:0}
+  .paper-footer pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}
+  .watermark{display:grid;position:fixed;inset:0;z-index:9999;pointer-events:none;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;align-items:center;justify-items:center;overflow:hidden}
+  .watermark span{transform:rotate(-30deg);white-space:nowrap;font-size:15pt;font-weight:600;color:rgba(168,78,50,.10);letter-spacing:.06em;line-height:1.4;text-align:center}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
+<div class="watermark" aria-hidden="true"><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span><span>质子梯度（北京）科技有限公司<br>AtomGradient</span></div>
+
+<header class="nav">
+  <a class="brand" href="https://atomgradient.github.io/">AtomGradient</a>
+  <nav class="links" aria-label="Site navigation">
+    <a href="https://atomgradient.github.io/#research">Research</a>
+    <a href="../../" class="current">Whitepapers</a>
+    <a href="https://atomgradient.com" target="_blank" rel="noopener">Official Site</a>
+    <a href="https://github.com/AtomGradient/whitepapers" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+  <div class="tools">
+    <button class="btn icon" id="tocBtn" aria-controls="sidebar" aria-expanded="false" aria-label="Contents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+    <button class="btn icon" data-theme-toggle aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A7 7 0 0 1 12 3z"/></svg></button>
+    <a class="btn primary" href="AtomGradient-Neural-Imprint-Whitepaper-v2-en.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="label">View PDF</span></a>
+  </div>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar" aria-label="Contents">
+    <div class="paper-tag"><strong>Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning</strong><br>Whitepaper v2 · 2026-09-17</div>
+    <nav class="toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol><li class="l2"><a href="#s1">1. NI's Goal Has Always Been Continual Learning</a></li>
+<li class="l3"><a href="#s1-1">1.1 Enabling Agents to Keep Growing After Deployment</a></li>
+<li class="l3"><a href="#s1-2">1.2 What Separates Temporary Adaptation from Sustained Growth?</a></li>
+<li class="l3"><a href="#s1-3">1.3 The Research Question Running Through This Paper</a></li>
+<li class="l3"><a href="#s1-4">1.4 Intelligence Goes to the Data</a></li>
+<li class="l2"><a href="#s2">2. Turning the “Paper Notes” Metaphor into a Learning Problem</a></li>
+<li class="l3"><a href="#s2-1">2.1 Paper Notes as an Entry Point for Experience</a></li>
+<li class="l3"><a href="#s2-2">2.2 What Does It Mean to Superimpose Notes?</a></li>
+<li class="l3"><a href="#s2-3">2.3 Remembering Experiences, Understanding Patterns, and Developing Capabilities</a></li>
+<li class="l3"><a href="#s2-4">2.4 Learning Is Compression, but Smaller Is Not Always Better</a></li>
+<li class="l2"><a href="#s3">3. The Core of Next-Generation NI: Letting Experience Change State the Model Can Use</a></li>
+<li class="l3"><a href="#s3-1">3.1 Observation, Action, and Updating Should Form a Loop</a></li>
+<li class="l3"><a href="#s3-2">3.2 Incremental Learning: Building on What Has Already Been Learned</a></li>
+<li class="l3"><a href="#s3-3">3.3 The Model Is the Product: The Model Carries What Has Been Learned</a></li>
+<li class="l3"><a href="#s3-4">3.4 Restoring Learning, Not Just Restoring Use</a></li>
+<li class="l2"><a href="#s4">4. The Technology Stack We Have Built Around NI</a></li>
+<li class="l3"><a href="#s4-1">4.1 Local Continual Learning Requires Models That Can Keep Running</a></li>
+<li class="l3"><a href="#s4-2">4.2 Core Mechanisms in Model Optimization and the Runtime</a></li>
+<li class="l3"><a href="#s4-3">4.3 RPP</a></li>
+<li class="l3"><a href="#s4-4">4.4 How Does Learning State Enter Inference?</a></li>
+<li class="l3"><a href="#s4-5">4.5 Tool Learning and Personal State in Inference</a></li>
+<li class="l3"><a href="#s4-6">4.6 Activation Steering and Directional Steering</a></li>
+<li class="l3"><a href="#s4-7">4.7 Representative Engineering Results and Measurements</a></li>
+<li class="l3"><a href="#s4-8">4.8 From Existing Foundations to the Next Generation</a></li>
+<li class="l2"><a href="#s5">5. Why Do Language, World Models, and Agents Come Together Here?</a></li>
+<li class="l3"><a href="#s5-1">5.1 Understanding Not Only What Happened, but What Could Happen</a></li>
+<li class="l3"><a href="#s5-2">5.2 The Device Is the Agent: Models Enter the Environment Through Devices</a></li>
+<li class="l3"><a href="#s5-3">5.3 Learning Through Games: How Does Experience Become Capability?</a></li>
+<li class="l3"><a href="#s5-4">5.4 Could These Functions Be Unified in One Model?</a></li>
+<li class="l3"><a href="#s5-5">5.5 What Role Does Each Part Play?</a></li>
+<li class="l2"><a href="#s6">6. Technical Methods and Philosophical Insights: How Should Learning Mechanisms Be Designed?</a></li>
+<li class="l3"><a href="#s6-1">6.1 Start with Representations That Preserve the Distinctions That Matter</a></li>
+<li class="l3"><a href="#s6-2">6.2 Associative Memory: Giving “Layered Notes” Rules for Reading and Writing</a></li>
+<li class="l3"><a href="#s6-3">6.3 First Learn How to Read and Write, Then Keep Taking in Experience: Lessons from TTT</a></li>
+<li class="l3"><a href="#s6-4">6.4 Multiple Timescales: Fresh Experience and Stable Capabilities Need Not Change at the Same Rate</a></li>
+<li class="l3"><a href="#s6-5">6.5 Writing, Forgetting, and Recall All Involve Trade-offs</a></li>
+<li class="l3"><a href="#s6-6">6.6 A Philosophical Lesson from Chips: How Can General Mechanisms Handle Future Tasks?</a></li>
+<li class="l3"><a href="#s6-7">6.7 Lessons from Heterogeneous Integration: Division of Roles and Interconnection, Not Just More Layers</a></li>
+<li class="l2"><a href="#s7">7. What Are the Hard Problems We Need to Solve?</a></li>
+<li class="l3"><a href="#s7-1">7.1 Compression Must Serve Tasks Not Yet Encountered</a></li>
+<li class="l3"><a href="#s7-2">7.2 How Does a Change in State Become a Change in Capability?</a></li>
+<li class="l3"><a href="#s7-3">7.3 From Correlation to Reliable Judgments About Action Consequences</a></li>
+<li class="l3"><a href="#s7-4">7.4 Balancing New Experience with Retention of Existing Capabilities</a></li>
+<li class="l3"><a href="#s7-5">7.5 On-Device Constraints Must Be Part of the Algorithm</a></li>
+<li class="l3"><a href="#s7-6">7.6 Across Devices and Heterogeneous Environments: What Exactly Is Being Transferred?</a></li>
+<li class="l2"><a href="#s8">8. Comparisons and Lessons from AgentOdyssey</a></li>
+<li class="l3"><a href="#s8-1">8.1 What Observable Comparisons Does It Provide?</a></li>
+<li class="l3"><a href="#s8-2">8.2 Trade-offs with External Retrieval, Accumulated Context, and Other Approaches</a></li>
+<li class="l3"><a href="#s8-3">8.3 Applying These References to NI's Long-Term Learning Research</a></li>
+<li class="l2"><a href="#s9">9. How Do We Establish That Continual Learning Has Taken Place?</a></li>
+<li class="l3"><a href="#s9-1">9.1 Look Beyond the Outcome to Where the Change Came From</a></li>
+<li class="l3"><a href="#s9-2">9.2 Let Scientific Questions Determine the Experimental Sequence</a></li>
+<li class="l3"><a href="#s9-3">9.3 Separate Learning Experiences from Independent Tests</a></li>
+<li class="l3"><a href="#s9-4">9.4 Resource Accounting Must Cover Both Use and Continued Learning</a></li>
+<li class="l2"><a href="#s10">10. Our Research Choices and Open Trade-offs</a></li>
+<li class="l3"><a href="#s10-1">10.1 Which Changes Should Become Part of the Model?</a></li>
+<li class="l3"><a href="#s10-2">10.2 How Should Capacity Growth and Consolidation Be Coordinated?</a></li>
+<li class="l3"><a href="#s10-3">10.3 How Can Autonomous Learning Coexist with User Control?</a></li>
+<li class="l3"><a href="#s10-4">10.4 Different Devices Can Take Different Roles</a></li>
+<li class="l2"><a href="#s11">11. Conclusion: Models That Keep Developing Capabilities Through Experience</a></li>
+<li class="l2"><a href="#appendix-a">Appendix A: Quick Glossary</a></li></ol>
+    </nav>
+    <div class="actions">© 2026 AtomGradient · <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></div>
+  </aside>
+
+  <main class="main">
+    <article class="article" id="content">
+      <header class="paper-header">
+        <div class="eyebrow">Neural Imprint · Whitepaper v2</div>
+        <h1>Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning</h1>
+        <p class="subtitle">Whitepaper v2 · AtomGradient · September 17, 2026</p>
+        <div class="meta">
+          <span>Date 2026-09-17</span>
+          <span>Version v2</span>
+          <span>Language English · <a href="../">中文</a></span>
+        </div>
+        <div class="header-actions">
+          <a class="btn primary" href="AtomGradient-Neural-Imprint-Whitepaper-v2-en.pdf" target="_blank" rel="noopener">View PDF</a>
+          <a class="btn" href="https://github.com/AtomGradient/whitepapers" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div class="abstract">
+<p>This whitepaper presents AtomGradient's research position on continual learning, the algorithmic and engineering foundations we have established, and the direction of the next generation of Neural Imprint.</p>
+<p>We see continual learning as a practical problem that spans algorithms, models, and device operation. Our understanding of intelligence guides the research; algorithm design provides the learning mechanisms; engineering and experiments put those mechanisms to the test in the real world.</p>
+        </div>
+        <div class="cover-org">AtomGradient · 质子梯度（北京）科技有限公司<br>Online edition and corrections: https://atomgradient.github.io/whitepapers/neural-imprint/en/<br>License: CC BY-NC-ND 4.0 · attribution required, no derivatives, no commercial use</div>
+      </header>
+
+      <nav class="print-toc" aria-label="Table of contents (print)">
+        <h2>Contents</h2>
+        <ol><li class="l2"><a href="#s1">1. NI's Goal Has Always Been Continual Learning</a></li>
+<li class="l3"><a href="#s1-1">1.1 Enabling Agents to Keep Growing After Deployment</a></li>
+<li class="l3"><a href="#s1-2">1.2 What Separates Temporary Adaptation from Sustained Growth?</a></li>
+<li class="l3"><a href="#s1-3">1.3 The Research Question Running Through This Paper</a></li>
+<li class="l3"><a href="#s1-4">1.4 Intelligence Goes to the Data</a></li>
+<li class="l2"><a href="#s2">2. Turning the “Paper Notes” Metaphor into a Learning Problem</a></li>
+<li class="l3"><a href="#s2-1">2.1 Paper Notes as an Entry Point for Experience</a></li>
+<li class="l3"><a href="#s2-2">2.2 What Does It Mean to Superimpose Notes?</a></li>
+<li class="l3"><a href="#s2-3">2.3 Remembering Experiences, Understanding Patterns, and Developing Capabilities</a></li>
+<li class="l3"><a href="#s2-4">2.4 Learning Is Compression, but Smaller Is Not Always Better</a></li>
+<li class="l2"><a href="#s3">3. The Core of Next-Generation NI: Letting Experience Change State the Model Can Use</a></li>
+<li class="l3"><a href="#s3-1">3.1 Observation, Action, and Updating Should Form a Loop</a></li>
+<li class="l3"><a href="#s3-2">3.2 Incremental Learning: Building on What Has Already Been Learned</a></li>
+<li class="l3"><a href="#s3-3">3.3 The Model Is the Product: The Model Carries What Has Been Learned</a></li>
+<li class="l3"><a href="#s3-4">3.4 Restoring Learning, Not Just Restoring Use</a></li>
+<li class="l2"><a href="#s4">4. The Technology Stack We Have Built Around NI</a></li>
+<li class="l3"><a href="#s4-1">4.1 Local Continual Learning Requires Models That Can Keep Running</a></li>
+<li class="l3"><a href="#s4-2">4.2 Core Mechanisms in Model Optimization and the Runtime</a></li>
+<li class="l3"><a href="#s4-3">4.3 RPP</a></li>
+<li class="l3"><a href="#s4-4">4.4 How Does Learning State Enter Inference?</a></li>
+<li class="l3"><a href="#s4-5">4.5 Tool Learning and Personal State in Inference</a></li>
+<li class="l3"><a href="#s4-6">4.6 Activation Steering and Directional Steering</a></li>
+<li class="l3"><a href="#s4-7">4.7 Representative Engineering Results and Measurements</a></li>
+<li class="l3"><a href="#s4-8">4.8 From Existing Foundations to the Next Generation</a></li>
+<li class="l2"><a href="#s5">5. Why Do Language, World Models, and Agents Come Together Here?</a></li>
+<li class="l3"><a href="#s5-1">5.1 Understanding Not Only What Happened, but What Could Happen</a></li>
+<li class="l3"><a href="#s5-2">5.2 The Device Is the Agent: Models Enter the Environment Through Devices</a></li>
+<li class="l3"><a href="#s5-3">5.3 Learning Through Games: How Does Experience Become Capability?</a></li>
+<li class="l3"><a href="#s5-4">5.4 Could These Functions Be Unified in One Model?</a></li>
+<li class="l3"><a href="#s5-5">5.5 What Role Does Each Part Play?</a></li>
+<li class="l2"><a href="#s6">6. Technical Methods and Philosophical Insights: How Should Learning Mechanisms Be Designed?</a></li>
+<li class="l3"><a href="#s6-1">6.1 Start with Representations That Preserve the Distinctions That Matter</a></li>
+<li class="l3"><a href="#s6-2">6.2 Associative Memory: Giving “Layered Notes” Rules for Reading and Writing</a></li>
+<li class="l3"><a href="#s6-3">6.3 First Learn How to Read and Write, Then Keep Taking in Experience: Lessons from TTT</a></li>
+<li class="l3"><a href="#s6-4">6.4 Multiple Timescales: Fresh Experience and Stable Capabilities Need Not Change at the Same Rate</a></li>
+<li class="l3"><a href="#s6-5">6.5 Writing, Forgetting, and Recall All Involve Trade-offs</a></li>
+<li class="l3"><a href="#s6-6">6.6 A Philosophical Lesson from Chips: How Can General Mechanisms Handle Future Tasks?</a></li>
+<li class="l3"><a href="#s6-7">6.7 Lessons from Heterogeneous Integration: Division of Roles and Interconnection, Not Just More Layers</a></li>
+<li class="l2"><a href="#s7">7. What Are the Hard Problems We Need to Solve?</a></li>
+<li class="l3"><a href="#s7-1">7.1 Compression Must Serve Tasks Not Yet Encountered</a></li>
+<li class="l3"><a href="#s7-2">7.2 How Does a Change in State Become a Change in Capability?</a></li>
+<li class="l3"><a href="#s7-3">7.3 From Correlation to Reliable Judgments About Action Consequences</a></li>
+<li class="l3"><a href="#s7-4">7.4 Balancing New Experience with Retention of Existing Capabilities</a></li>
+<li class="l3"><a href="#s7-5">7.5 On-Device Constraints Must Be Part of the Algorithm</a></li>
+<li class="l3"><a href="#s7-6">7.6 Across Devices and Heterogeneous Environments: What Exactly Is Being Transferred?</a></li>
+<li class="l2"><a href="#s8">8. Comparisons and Lessons from AgentOdyssey</a></li>
+<li class="l3"><a href="#s8-1">8.1 What Observable Comparisons Does It Provide?</a></li>
+<li class="l3"><a href="#s8-2">8.2 Trade-offs with External Retrieval, Accumulated Context, and Other Approaches</a></li>
+<li class="l3"><a href="#s8-3">8.3 Applying These References to NI's Long-Term Learning Research</a></li>
+<li class="l2"><a href="#s9">9. How Do We Establish That Continual Learning Has Taken Place?</a></li>
+<li class="l3"><a href="#s9-1">9.1 Look Beyond the Outcome to Where the Change Came From</a></li>
+<li class="l3"><a href="#s9-2">9.2 Let Scientific Questions Determine the Experimental Sequence</a></li>
+<li class="l3"><a href="#s9-3">9.3 Separate Learning Experiences from Independent Tests</a></li>
+<li class="l3"><a href="#s9-4">9.4 Resource Accounting Must Cover Both Use and Continued Learning</a></li>
+<li class="l2"><a href="#s10">10. Our Research Choices and Open Trade-offs</a></li>
+<li class="l3"><a href="#s10-1">10.1 Which Changes Should Become Part of the Model?</a></li>
+<li class="l3"><a href="#s10-2">10.2 How Should Capacity Growth and Consolidation Be Coordinated?</a></li>
+<li class="l3"><a href="#s10-3">10.3 How Can Autonomous Learning Coexist with User Control?</a></li>
+<li class="l3"><a href="#s10-4">10.4 Different Devices Can Take Different Roles</a></li>
+<li class="l2"><a href="#s11">11. Conclusion: Models That Keep Developing Capabilities Through Experience</a></li>
+<li class="l2"><a href="#appendix-a">Appendix A: Quick Glossary</a></li></ol>
+      </nav>
+
+<h2 id="s1">1. NI's Goal Has Always Been Continual Learning</h2>
+<p>Neural Imprint (NI) is a continual learning algorithm and algorithmic architecture developed by AtomGradient. Around NI, we have built a supporting technology stack that covers model optimization, inference runtimes, learning-state management, tool integration, developer interfaces, and cross-device collaboration. Our goal is for models running on users' devices to build understanding from new records, interactions, and action feedback, and to use what they learn in the next task.</p>
+<p>The first generation has already established a foundation for this on phones: a model first processes information about the user and instructions for available tools, preserves the internal computational state formed in doing so, and carries that state into subsequent sessions. As new records and user corrections accumulate, the existing workflow supports incremental learning, updating and activating new learning states. Building on this foundation, the next generation will investigate finer-grained updates, longer-term capability retention, and continuity of learning across devices.</p>
+<p>For users, this means the model can carry its understanding of their characteristics and tool usage into later sessions, reducing the need to explain the same things repeatedly. When a question requires precise records, the model can use connected tools to look them up.</p>
+<p>NI has pursued continual learning from its first generation. We are working toward the same goal, developing the mechanisms already established into a more complete learning loop.</p>
+<p>Memory, representations, the structures that hold state, tool use, and adjustments to inference all serve this loop. The central question is whether experience leaves the model better able to handle what comes next—and whether it can keep revising its understanding as new evidence arrives.</p>
+<h3 id="s1-1">1.1 Enabling Agents to Keep Growing After Deployment</h3>
+<p>Foundation models have given agents strong capabilities in language understanding, perception, and task execution. Yet performing well on a single task and continuing to grow through long-term use are still different things.</p>
+<p>A model may understand a new piece of information today and still need us to explain it again tomorrow. It may accept a correction now without changing how it handles a similar situation later. This gap between understanding and lasting accumulation is precisely what continual learning seeks to address.</p>
+<p><a href="https://ttcl-agents.github.io/#about" target="_blank" rel="noopener">Test-Time Continual Learning (TTCL)</a> focuses on agents continuing to acquire, consolidate, and refine capabilities after deployment. Our position is that growth should extend throughout a model's useful life, rather than take place only before delivery. Here, “test time” primarily refers to the period of actual use.</p>
+<p>We aim to make that growth happen on users' devices and in their environments. Models should form new understanding from observations, interactions, action outcomes, and corrections; retain capabilities that remain useful; and apply what they learn to situations they have not encountered before. Everyday updates should build on prior learning at an affordable incremental cost.</p>
+<p>This requires us to study understanding, prediction, action, and long-term reliability together. The value of continual learning lies in experience continually becoming a capability for facing the future.</p>
+<h3 id="s1-2">1.2 What Separates Temporary Adaptation from Sustained Growth?</h3>
+<p>What we find most unsatisfying about today's large models is how difficult it is for understanding formed during one interaction to become a capability they retain later. <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">In-context learning</a> shows that models can adapt to a task using newly supplied examples and definitions. Continual learning seeks to make that adaptation persist.</p>
+<p>The real distinction is this: after understanding something once, does the model need to be reminded from the beginning next time? Can a correction received today remain effective in relevant situations? If circumstances change, can the model recognize that an earlier understanding no longer applies?</p>
+<p>We use “learning continuity” to describe this goal: turning adaptation within the current task into changes that can be used, tested, and revised across tasks.</p>
+<h3 id="s1-3">1.3 The Research Question Running Through This Paper</h3>
+<blockquote>
+<p>How can NI use sustainable incremental mechanisms to help an agent organize, compress, and consolidate a continuing stream of experiences into capabilities it can use, revise, and transfer—while maintaining learning continuity under limited resources and across heterogeneous environments?</p>
+</blockquote>
+<p>We choose how to carry learning based on what learning needs to achieve. Changes may reside in model parameters, internal state, or both; different timescales may also call for different update methods. A mechanism's value depends on how change happens, why it is useful, and how it persists.</p>
+<p>Tools provide observations, actions, and authoritative facts. NI further asks how models can form reusable understanding and strategies from the experience of using those tools.</p>
+<h3 id="s1-4">1.4 Intelligence Goes to the Data</h3>
+<p>We once posed a question: does intelligence go to the data, or does the data go to intelligence?</p>
+<p><strong>AtomGradient's answer is: intelligence goes to the data.</strong></p>
+<p>This determines where we develop learning capabilities: we bring models into the devices and environments where data originates, so that understanding, responses, and accumulated learning take place where personal experiences occur.</p>
+<p>Closely connected to this is a research position we have always held: <strong>the device is the agent.</strong> Using each device's own computing capabilities, we bring together models, sensory inputs, available actions, and persistent learning state, so that observation, understanding, action, and learning happen within the device's environment.</p>
+<p>The device thus becomes the entity in which experiences occur, capabilities operate, and learning accumulates. Local computation allows it to process its own observations, use its own tools, and update its understanding from new feedback. Continual learning gains a concrete home: a device that remains with its user over time and keeps growing through use.</p>
+<p>Bringing intelligence to the data also shapes the relationship between models and people. Real life is not a dataset submitted once and for all. Habits change, environments change, tools change, and a person's understanding of the same issue can change too. Intelligence that can keep learning where these changes occur has a chance to participate in a lasting relationship, rather than merely process a series of isolated requests.</p>
+<p>This also concerns control. Users should decide which experiences are learned from, which understandings should be revised, and which states may be saved, deleted, or transferred. Learning states need explicit privacy protection, just as raw data does.</p>
+<p>The same principle applies to cross-device learning. We want learning to continue across devices with different computing and sensing capabilities, while raw data remains on users' devices. The movement of learning states must respect explicit compatibility and authorization boundaries.</p>
+<p>Choosing to bring intelligence to the data means confronting real devices' memory, power, bandwidth, and operating conditions from the outset. These constraints directly shape the design of the learning mechanism.</p>
+<h2 id="s2">2. Turning the “Paper Notes” Metaphor into a Learning Problem</h2>
+<h3 id="s2-1">2.1 Paper Notes as an Entry Point for Experience</h3>
+<p>We once imagined this through a multidimensional space: an agent lives inside it, and paper notes can be attached to every wall. Incoming records are the notes. One experience may relate to several walls, and multiple notes may share the same representational location. When a question arrives later, the agent can find the relevant content and express it again.</p>
+<p>In this metaphor, a “note” corresponds to an observation or a record, and a “wall” to the internal space in which a model organizes information. “Attaching” means allowing a new experience to change internal state; “finding” means using the current question to evoke relevant information; “layering notes” means accommodating different experiences within shared structure.</p>
+<p>We chose paper notes because of the forms in which information can be presented. Text can be a record, an image a single view, video a sequence of frames, and audio a transcription. The metaphor turns a continuous stream of information into units that can be processed.</p>
+<p>A note is presented in two dimensions, but the relationships it carries can be multidimensional. A record may connect time, objects, goals, context, and outcomes at once. When video is examined frame by frame, the order of actions matters; when audio becomes text, information such as tone and pauses may be lost. What we seek to learn from is interconnected experience, not just isolated units of data.</p>
+<p>The “walls” invite us to think about representation spaces: could the same experience be understood and used through different relationships, rather than assigned to one fixed drawer? We are more interested in whether the model can learn this organization than in having developers predefine a classification rule for every situation.</p>
+<h3 id="s2-2">2.2 What Does It Mean to Superimpose Notes?</h3>
+<p>The most interesting part of this idea is that experiences need not each occupy an entirely separate slot. They may share some structure while retaining the conditions that matter to each one.</p>
+<p>Shared representations create an opportunity for compression and a risk of interference. Two experiences that look similar may require opposite actions because a crucial condition differs. Two experiences that look different may reflect the same underlying pattern. Preserving these distinctions is closer to the problem of learning than simply adding storage.</p>
+<p>The key to “layering” is therefore selective sharing: identify reusable structure when writing, preserve the conditions that determine outcomes, and understand which set of relationships a current cue refers to when reading.</p>
+<p>Expressing an internal representation in language makes retained information usable again. The model should also distinguish recollection, inference, and the unknown: what comes from a particular experience, what is a judgment based on a pattern, and what still lacks evidence.</p>
+<h3 id="s2-3">2.3 Remembering Experiences, Understanding Patterns, and Developing Capabilities</h3>
+<p>This involves three connected levels. <strong>Remembering an experience</strong> means knowing what happened on a particular occasion. <strong>Understanding a pattern</strong> means recognizing possible relationships between conditions and consequences. <strong>Developing a capability</strong> means using that understanding to choose and carry out appropriate actions in a new situation.</p>
+<p>To explain this progression clearly, we need to distinguish episodic memory, semantic memory, and what is commonly called “factual memory.” <a href="https://www.annualreviews.org/content/journals/10.1146/annurev.psych.53.100901.135114" target="_blank" rel="noopener">Tulving's research on episodic and semantic memory</a> helps separate recollection of specific experiences from possession of knowledge. We use this functional distinction to design learning tasks for models, focusing on whether information from experience can be retained and used.</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>Concept</th>
+<th>What question does it answer?</th>
+<th>Example in an agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Episodic memory</td>
+<td>What happened in a particular context?</td>
+<td>Remembering the goal of an attempt, its conditions, the action taken, and its consequences, and recalling the episode when relevant cues appear</td>
+</tr>
+<tr>
+<td>Semantic memory</td>
+<td>What is already known, and how can it be understood?</td>
+<td>Knowing what a tool means, how a class of environments works, or what has been learned about personal preferences, without having to replay the original learning episode</td>
+</tr>
+<tr>
+<td>Factual memory</td>
+<td>What factual content has been retained?</td>
+<td>When an event occurred, an object's attributes, or a learned definition; factual content can occur in episodic memory or become semantic knowledge</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are explanations of three common terms, not three mutually exclusive compartments. Episodic and semantic memory distinguish how information is organized and used; “factual” describes its content. Semantic memory includes facts and concepts, while episodic memory also contains facts about events. We further use “exact factual recall” for the task of answering questions about the details of original records, and discuss it separately from forming understanding from experience.</p>
+<p>NI asks which details determine the meaning of an experience and which understandings are worth using again. For questions that require exact amounts, dates, original wording, or the latest status, a model can access authoritative records through tools. Learning retains the structures that help it understand situations, predict consequences, and choose actions. Not memorizing every raw fact is therefore compatible with retaining useful episodic and semantic knowledge.</p>
+<p>For example, an agent's failure in a game may be retained as an episode with conditions and consequences. Comparing related experiences may help the model form an understanding of how the environment works. In an entirely new situation, it can then use the current conditions to judge whether that understanding applies. This last step is adaptive reasoning: using what has been learned to address a new problem, and revising a judgment when the evidence changes.</p>
+<p>Memory supplies material for reasoning; reasoning puts that material to work in the current problem; learning then incorporates new feedback. <strong>Continual learning aims to make this loop continually develop capabilities.</strong> Episodes need not be preserved word for word, and generalizations should retain their conditions of applicability, so the model can benefit from the past without being trapped by it.</p>
+<h3 id="s2-4">2.4 Learning Is Compression, but Smaller Is Not Always Better</h3>
+<p>We have long regarded compression as essential to understanding learning. People cannot retain every detail of every fact, yet experience can give rise to habits, ways of judging, and skills. We want models to preserve structures that matter for the future, rather than merely accumulate the surface forms of the past.</p>
+<p>By compression, we mean preserving meaning and function: discarding irrelevant differences while retaining information that affects understanding, prediction, and action. Its purpose is to make experience more useful, not simply to minimize size. <a href="https://arxiv.org/abs/1612.00410" target="_blank" rel="noopener">Information bottleneck theory</a> addresses this trade-off: how much task-relevant information to retain in a limited internal representation while compressing other details.</p>
+<p>An added difficulty in continual learning is that future questions are not fully known. A detail that seems irrelevant today may determine tomorrow's judgment. We need to study not only how to generalize, but also the scope and uncertainty of those generalizations, and how to reorganize understanding when exceptions appear.</p>
+<p>Selective forgetting is a necessary trade-off under finite resources. Catastrophic forgetting is the uncontrolled loss of still-important capabilities while learning something new. We aim to take in new experience while preserving understanding and skills that remain valid.</p>
+<h2 id="s3">3. The Core of Next-Generation NI: Letting Experience Change State the Model Can Use</h2>
+<h3 id="s3-1">3.1 Observation, Action, and Updating Should Form a Loop</h3>
+<p>We organize learning as a continuous feedback loop: existing capabilities and current experience jointly determine how to update; the updated model and state then participate in the next act of understanding and action.</p>
+<pre class="diagram"><code>Observe + use existing state → Understand → Act
+             ↑                              ↓
+ Retain, consolidate, revise ← Experience + feedback</code></pre>
+<p>Experience here is more than receiving a passage of text. It can include what was done, under which conditions, what happened, and where an earlier prediction was wrong.</p>
+<p>An agent can observe actively, explore to reduce uncertainty, and revisit a failure. Actions change the experiences that become available next, and those experiences should change the next action.</p>
+<p>This loop must also distinguish two kinds of change: tracking the current situation and forming understanding that persists across experiences. Knowing one's current location and learning “how to act under these conditions” both require internal state, but they are not the same learning outcome.</p>
+<h3 id="s3-2">3.2 Incremental Learning: Building on What Has Already Been Learned</h3>
+<p>We have a straightforward requirement for continual learning: each new batch of experience should build on what has already been learned.</p>
+<p><a href="https://www.nature.com/articles/s42256-022-00568-3" target="_blank" rel="noopener">Incremental learning</a> emphasizes absorbing new information using prior learning. Continual learning also faces long-term retention, correction, transfer, and environmental change; online learning places greater emphasis on processing data as it arrives. These concepts overlap in research. What matters is specifying what is updated, when, and at what cost.</p>
+<p>The first generation of NI already supports incremental learning. The on-device application accumulates new records and user corrections, and prompts the user to learn again when update conditions are met. The user decides when to begin.</p>
+<p>Once the process starts, the system identifies unchanged records by their content and reuses their existing internal representations, computing new representations only for new or changed content. RPP then combines old and new representations to derive personal characteristics, generate a new learning state, save it, and activate it for subsequent inference. This workflow—from incoming data to an updated learning artifact and its use in inference—has already been validated on physical devices.</p>
+<p class="source-note"><sub>Source: AtomGradient internal research and test records.</sub></p>
+<p>The current mechanism combines incremental representation extraction with periodic analysis across the accumulated material: unchanged records do not need their representations extracted again, while personal-characteristic analysis and state generation use old and new material together. Building on this operating learning path, the next generation will investigate finer-grained updates, so that everyday learning costs track the amount of new information more closely, while strengthening long-term consolidation and retention of earlier capabilities.</p>
+<p>Review and reorganization still matter. People also revisit, generalize from, and reinterpret past experiences. We advocate combining everyday incremental updates with periodic consolidation: the former maintains continuity, while the latter turns accumulated experience into more stable, reusable structure.</p>
+<h3 id="s3-3">3.3 The Model Is the Product: The Model Carries What Has Been Learned</h3>
+<p>NI has a clear design goal: the outcome of continual learning is a model. Changes caused by experience should be internalized, retained in parameters or learning state, and used in subsequent understanding, prediction, and action.</p>
+<p><strong>The model is the product: product value accumulates as the model learns.</strong> The value users build over time comes not only from general capabilities present at delivery, but also from the understanding, judgment, and ways of acting that the model develops later. We want this growth to become something the model itself can carry.</p>
+<p>Putting every record in a database and retrieving it for the model when needed is a useful technical approach. Its primary question, however, is how to retrieve external content. NI asks a further question: how do those experiences change the way the model understands and uses information?</p>
+<p>The unit of transfer should therefore be a complete model that carries its learning: both the parameters that perform computation and the internal learning states that hold acquired understanding and participate in later computation. If learning changes weights, the updated weights must be retained. If fast weights or other neural memory states carry the changes, those states are part of the learning artifact. Whether they are stored in one file or several is a matter of implementation and delivery.</p>
+<p>We want the model to carry its understanding of past situations, its knowledge, and its adaptive reasoning capabilities into another compatible device, without separately bringing raw experience archives or an external retrieval store to reconstruct that understanding. Further consolidating learning into a unified set of model parameters is one path worth exploring. In choosing how learning is carried, we focus on the relationship between usable capabilities, continued updating, and device costs.</p>
+<p>We judge internalization by function: has experience changed the model's subsequent understanding, prediction, and action, and can that change remain useful and open to correction? Devices continue to provide computation, perception, and action interfaces; tools continue to provide current information and authoritative facts. The model enters its new environment with the understanding it has already acquired.</p>
+<h3 id="s3-4">3.4 Restoring Learning, Not Just Restoring Use</h3>
+<p>Long-term growth means that after a restart, a model can both use what it has learned and keep learning through the same mechanism.</p>
+<p>Restoring learning requires preserving both readable learning outcomes and the information needed to update them. An associative mapping, for example, may support reading, while further updates may depend on accumulated statistics or other auxiliary state. Learning continuity requires these dependencies to be part of the design.</p>
+<p>This gives transfer two requirements: first, restore acquired capabilities with the model; then, allow further growth to continue from the same point. The next generation needs to investigate which information must travel with the model, which can be replaced by consolidated state, and how to absorb new experience without repeatedly reading the entire history.</p>
+<p>During learning, raw material and historical representations may remain on the device at the user's discretion, for review, correction, or periodic reorganization. These should be distinguished from the learning artifacts that must be carried during transfer. We aim to progressively reduce the dependence of capability use and everyday updates on raw history, allowing the model to keep growing from the understanding it has already formed.</p>
+<p>After restoration, the model should continue from where it left off: using prior understanding, accepting new evidence, and allowing old and new state to evolve coherently.</p>
+<h2 id="s4">4. The Technology Stack We Have Built Around NI</h2>
+<p>Continual learning requires algorithms, models, and devices to work together. Starting from the learning objective, we define the required capabilities from the top down, then build the supporting technology stack from the bottom up. NI provides the continual learning algorithm and architecture; the supporting engineering brings these mechanisms onto real devices and enables their operation, updating, validation, and use.</p>
+<p>The stack connects the following areas of work:</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>Area</th>
+<th>Capabilities we have established</th>
+<th>Role in continual learning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Experience representations and learning mechanisms</td>
+<td>RPP, on-device incremental learning, direction construction, and activation-intervention interfaces</td>
+<td>Form usable understanding from records and corrections, allowing changes to affect subsequent inference</td>
+</tr>
+<tr>
+<td>Model analysis and optimization</td>
+<td>Activation analysis, pruning and quantization, before-and-after comparisons, and model and application export</td>
+<td>Study model capacity and computation trade-offs under device constraints, and bring the results into use</td>
+</tr>
+<tr>
+<td>Inference runtime and resource management</td>
+<td>DSR, FrogJump, cache quantization, device budgets, execution scheduling, and multimodal state management</td>
+<td>Determine which states are retained and which computations are performed, providing the operating foundation for long-term interaction</td>
+</tr>
+<tr>
+<td>Learning-state lifecycle</td>
+<td>Generation, saving, activation, restoration, removal, and compatibility checking of learning artifacts</td>
+<td>Make learning usable across sessions, with consistent updating and restoration</td>
+</tr>
+<tr>
+<td>Tool integration and developer interfaces</td>
+<td>Support for tool contracts, execution of tool calls, and interfaces that connect models, tools, and learning workflows to device applications</td>
+<td>Connect a model's understanding to the information a device can obtain and the actions it can perform</td>
+</tr>
+<tr>
+<td>Cross-device collaboration and state management</td>
+<td>Inter-device communication, compatibility checks, and mechanisms for transferring and restoring learning state</td>
+<td>Let prior learning remain usable across authorized, compatible devices</td>
+</tr>
+</tbody>
+</table></div>
+<p class="source-note"><sub>Source: AtomGradient internal research.</sub></p>
+<p>These efforts serve a common objective: devices should be able to use models over long periods, take in new experiences, update what has been learned, and use those updates in later tasks. We first describe the operating requirements and core mechanisms, then present representative measurements showing what the engineering achieves in practice.</p>
+<h3 id="s4-1">4.1 Local Continual Learning Requires Models That Can Keep Running</h3>
+<p>Bringing intelligence to the data first requires models to perform perception, inference, and interaction on the devices where that data resides. Continual learning depends on recurring observation, action, and feedback. Sustained model operation on real devices is therefore our starting point.</p>
+<p>The difficulties on devices are closely interdependent: model weights, session state, and temporary computation share limited memory; new images and speech keep arriving; and different chips incur different execution and data-movement costs. Addressing these issues requires understanding a model's computational structure and designing state management, memory allocation, and execution scheduling around it.</p>
+<p>An inference runtime is the software that arranges model computation, memory use, and state management. By designing model optimization and the runtime together, we have made concrete progress in sustained inference, session-state preservation, and speech execution on non-Apple platforms. Building on these results, next-generation NI will further investigate the computation and state requirements of learning updates, so that models can acquire new capabilities through continued interaction.</p>
+<h3 id="s4-2">4.2 Core Mechanisms in Model Optimization and the Runtime</h3>
+<p>We break model operation into several problems that must be addressed together: which historical states are worth keeping, which computations can be omitted, how limited memory should be allocated, how context can survive a change in perceptual workload, and how optimized models can be put to use on devices. We have developed the following mechanisms and tools around these questions.</p>
+<p><strong>DSR (Dual-Sparse Retention): choosing which history to retain within a limited cache.</strong></p>
+<p>In a long conversation, the attention cache grows as inputs and outputs accumulate. Also called the KV cache, it stores internal representations that later computation will query. DSR divides the available space among a small number of initial positions, recent content, and historical content with higher attention scores. Retention budgets also depend on layer position and scenario configuration.</p>
+<p>Importance is estimated here from attention scores produced during model execution, and those scores are updated as computation continues. DSR uses them to select states for retention and periodically compacts the cache, bringing the preservation of history within an explicit resource budget. It turns “what should limited memory be used for?” into an executable runtime rule and is one of our core mechanisms for supporting extended interaction.</p>
+<p><strong>FrogJump: using model structure to organize a leaner computation path.</strong></p>
+<p>This mechanism targets hybrid architectures containing both recurrent and attention layers: recurrent layers continually integrate prior information, while attention layers read the information they need from retained representations.</p>
+<p>FrogJump generates a layer-skipping plan from the structure of a supported model. During execution, it bypasses selected intermediate recurrent layers while preserving every full-attention layer and the recurrent layer immediately before it. The model can thus process input through a path that requires less computation.</p>
+<p>We have implemented the skipping plan, integrated it into inference execution, and added corresponding structural checks and tests. The current path is explicitly enabled in the non-thinking mode of supported models. FrogJump makes computation trade-offs configurable in the execution path; output quality, task performance, and actual running costs are the outcomes to examine together when evaluating such a path.</p>
+<p><strong>Cache quantization and hybrid-state management: considering both how much to retain and how to store it.</strong></p>
+<p>DSR selects states; cache quantization determines their numerical representation. Quantization stores values with fewer bits, reducing cache memory while introducing numerical error that needs to be evaluated. We design quantization formats, cache budgets, and execution paths together, so that storage representation works with model computation.</p>
+<p>Hybrid architectures also require separate management of different kinds of state: attention caches retain representations for later queries, while recurrent states integrate prior information into fixed-shape numerical state. Our runtime handles their allocation, updating, and restoration separately, allowing the different patterns of state growth to be managed independently.</p>
+<p><strong>Device budgets and execution scheduling: adapting computation to actual operating conditions.</strong></p>
+<p>We plan resources using available device memory, model footprint, bandwidth information, and execution capabilities. We reserve space for temporary computation, then allocate cache budgets and input-processing batch sizes. As context grows, execution scheduling can also adjust the amount of computation submitted in each batch to control transient pressure.</p>
+<p>This connects model structure with device conditions. The same model can use different cache sizes, computation batches, and submission schedules on different devices, providing a mode of sustained interaction suited to the hardware available.</p>
+<p><strong>Multimodal state continuity: preserving what needs to continue when computational tasks change.</strong></p>
+<p>When visual processing and language decoding take turns using resources, the runtime manages weights and session state separately. During chunked speech generation, it carries forward the internal state needed for subsequent output. To support these differences, we have implemented staged resource allocation and state-preservation paths, allowing a new observation or the next output chunk to continue from prior computation.</p>
+<p><strong>Model analysis, optimization, and delivery: bringing research changes into practical use.</strong></p>
+<p>We have also established workflows for activation analysis, pruning and quantization, reloading and quality checking after optimization, and exporting models and applications. Activation analysis helps us observe how computation is used. Pruning and quantization offer different choices of capacity and numerical representation. Comparative checks help assess the effects of those changes.</p>
+<p>Supporting developer interfaces connect model execution, tool execution, and learning-state management to device applications. This links model optimization, learning mechanisms, and device operation: research changes can be loaded, tested, and used, while results from devices can inform the next round of research.</p>
+<p>Runtime configurations also respect state-compatibility requirements. Long conversations can use budgeted cache management; restoring a captured, complete learning state uses a configuration compatible with the one that generated it, keeping state layout and execution consistent.</p>
+<p class="source-note"><sub>Source: AtomGradient internal implementation and research records.</sub></p>
+<p>Together, these mechanisms determine how a model uses limited computation and storage. The learning mechanisms that follow address how new experiences enter model state that can be retained and used.</p>
+<h3 id="s4-3">4.3 RPP</h3>
+<p>RPP extracts relatively stable signals of personal characteristics from multiple records. It takes the internal numerical values produced when a model processes those records and outputs a set of numerical directions for analyzing personal characteristics, helping identify structures that recur across records.</p>
+<p>Specifically, RPP first uses a predefined set of general feature directions as references, separates out their corresponding components in the records, and analyzes the remaining structure. These general directions describe common features and serve as shared references across users. Weighted principal component analysis and stability checks then produce directions for extracting personal characteristics.</p>
+<p>“Activations” here are the internal numerical representations formed as a model processes input; a “direction” describes a particular kind of variation in those representations. Principal component analysis finds more prominent patterns of variation, while stability checks examine how readily those patterns change with the sample.</p>
+<p>RPP lets us examine personally relevant structure within a model's representation space, rather than merely produce a surface-level summary of the original text. The next generation can build on this foundation while also investigating how representations, analytical objectives, and subsequent use should evolve.</p>
+<p>In the current workflow, these directions help select representative records. A model then uses those records to summarize personal characteristics. The resulting text, together with tool instructions, supplies the input for generating the reusable state described in the next section.</p>
+<p class="source-note"><sub>Source: AtomGradient internal research.</sub></p>
+<p>Building on this foundation, the next generation will further investigate representations of time, conditions, and action consequences, so that the structures identified can also participate in later judgments and predictions. This is an important connection between personally relevant structure and richer learning capabilities.</p>
+<h3 id="s4-4">4.4 How Does Learning State Enter Inference?</h3>
+<p>The model first reads text describing user characteristics and available tools. We save the internal computational state formed after that text has been processed. A later session can continue from this state to handle the current question, reusing computation that has already been performed.</p>
+<p>The first generation of NI already supports generating, updating, saving, restoring, and removing these states. Technically, the text processed first is called a “prefix”; its “tool contracts” describe the tools' functions, parameters, and usage.</p>
+<p>This allows previously formed computational state to be reused across sessions, with subsequent inputs processed on that foundation. On the next learning run, updated personal characteristics and tool instructions generate a new state, replacing the version previously used for inference. Later sessions can restore the new state and continue working. The next generation will investigate finer-grained state updates, bringing the writing of new understanding, correction of prior understanding, and long-term consolidation into closer coordination.</p>
+<p>Different model architectures provide different retention and integration mechanisms. Some states grow with the input sequence and support later attention queries; others recurrently integrate prior information into fixed-shape state. Understanding these differences helps us choose suitable structures for different capacity, reading, and updating requirements.</p>
+<h3 id="s4-5">4.5 Tool Learning and Personal State in Inference</h3>
+<p>Tool learning is an established foundation of first-generation NI. Tool contracts describe what tools can do, which parameters they accept, and how to use them. The model processes these contracts and forms a state. Once that state is restored, it can generate tool calls based on the current question, and the runtime executes them.</p>
+<p>For example, when a user asks how much they spent in a particular month, the model can retrieve the data through a connected spending-record query tool.</p>
+<p>In this workflow, the model learns the tool contracts during state construction. Once the actual tools have been implemented and registered, the resulting state can be reused during operation, without reinserting the same tool instructions into every request.</p>
+<p>We have validated the end-to-end on-device workflows for answering questions about personal characteristics and making the corresponding tool calls. This includes state restoration, generating calls from the current question, and runtime execution of the tools.</p>
+<p class="source-note"><sub>Source: AtomGradient internal test records.</sub></p>
+<p>Personal state allows the model to adjust its answers using established preferences and patterns, making it closer to semantic memory as discussed earlier. Starting from this foundation, the next generation will further investigate retaining specific experiences along with their time, context, and consequences, and using that understanding to reason when conditions change.</p>
+<p>The next generation must also move from knowing tool contracts to improving strategies through experience: when a call is worthwhile, how to respond to failure, and how to adapt when a protocol changes. A successful tool call is a foundation for this path, not its endpoint.</p>
+<h3 id="s4-6">4.6 Activation Steering and Directional Steering</h3>
+<p><a href="https://arxiv.org/abs/2308.10248" target="_blank" rel="noopener">Activation Steering</a> adjusts the internal numerical values a model is using while generating an answer, influencing what it generates next. These runtime values are called “activations.” This intervention can be used without changing model weights.</p>
+<p>Anthropic's <a href="https://www.anthropic.com/research/golden-gate-claude" target="_blank" rel="noopener">Golden Gate Bridge experiment</a> provides an intuitive example: amplifying a feature associated with the Golden Gate Bridge made the model mention it even in unrelated conversations. This demonstrates the direct effect of internal activations on generated output and highlights the importance of intervention strength and context.</p>
+<p>Our current implementation includes two direction-processing paths. One uses RPP-generated directions to examine the relationship between current input and existing structure, and prepares the numerical data needed for intervention. The other uses activation differences before and after a correction to construct directions that influence subsequent computation; we call it <strong>Directional Steering</strong>.</p>
+<p>Both paths concern internal activations. They differ in how directions are obtained, when they are used, and how they enter computation. A direction is a coordinated set of numerical adjustments. Directional Steering is a specific implementation of activation intervention.</p>
+<p>In the current application workflow, RPP directions are used to examine the relationship between input and personally relevant structure. For interventions using correction-derived directions, loading, reloading, and removal have been verified in dedicated runs. This provides a foundation for further research into direction selection, context matching, and intervention effects.</p>
+<p class="source-note"><sub>Source: AtomGradient internal research.</sub></p>
+<p>The next generation will focus on how directions correspond to learning objectives, how to choose the contexts for intervention, and how interventions interact during continual updating.</p>
+<h3 id="s4-7">4.7 Representative Engineering Results and Measurements</h3>
+<p>We have selected three cases with concrete execution records to illustrate sustained operation, multimodal state continuity, and execution efficiency. The long-conversation case combines cache quantization, memory budgets, dynamic scheduling, and bounded cache retention. The multi-image and speech cases demonstrate improvements in state management and computational organization, respectively.</p>
+<p class="source-note"><sub>Source for the measurements in this section: AtomGradient internal test records.</sub></p>
+<p><strong>Controlling cache and computation costs in long conversations so that large models can keep running on phones.</strong></p>
+<p>Long conversations continually increase cache and computational pressure. Some model layers integrate history into fixed-size state, while others retain an attention cache for later queries. We manage these two kinds of state separately, store caches in more compact numerical formats, set memory budgets, and adjust computation batch sizes as context grows. This allows the runtime to keep generating within the device's memory constraints.</p>
+<p>In sustained tests on two phones, a 9-billion-parameter model completed 200 rounds of questions and answers within a single session on each device. Each generated 204,800 tokens in total, with peak memory of approximately 5.5 GB. A token is a basic unit of text processing in a model; the observation here is whether the phones can keep completing one round of generation after another.</p>
+<p>Test conditions: Qwen3.5-9B-4bit on iPhone Air and iPhone 17 Pro, with exactly 1,024 tokens generated per round, continuous external power, and active cooling.</p>
+<p>This work brings state growth and execution pressure in long conversations within an explicit budget, providing an operational device foundation for sustained interaction.</p>
+<p><strong>Separating weight loading from session-state management so new images can enter an existing context.</strong></p>
+<p>Image processing requires additional memory. Releasing an entire language-model session also discards the state already formed, forcing history to be recomputed later. We separate the lifecycle of model weights from session state: temporarily unload decoder weights while preserving attention and recurrent states, then reload the weights after visual encoding and process only the new image and added text.</p>
+<p>In a controlled comparison of multi-image conversations, the wait from submitting the second image to the start of the model's answer fell from 8.15 seconds to 6.64 seconds—a reduction of about 1.5 seconds—while the existing session state was preserved. Keeping that state added approximately 190 MB to peak memory.</p>
+<p>Test conditions: an iPhone Air running a Qwen3.5-9B multi-image workload; the state-preservation mechanism is an experimental path, disabled by default and enabled for this test.</p>
+<p>This change addresses the need to recompute history when switching perceptual workloads. The device can free resources for a new observation while retaining the session state already formed. It also illustrates an important principle in our runtime design for continual learning: resources can be rearranged, while state should have independent mechanisms for preservation and restoration.</p>
+<p><strong>Reorganizing speech-predictor execution to improve computational efficiency on a non-Apple platform.</strong></p>
+<p>The speech predictor generates the encoded information needed for synthesized audio step by step. Each step needs only its corresponding output component, or “output head.” We split the computation shared across steps—the shared trunk—and the output heads into separate execution units. Keeping the original weight values and the trunk's state-update structure, we run only the fixed-weight output head needed at that step and pass the trunk's output directly to it.</p>
+<p>On an older chip on a non-Apple platform, the median time for the predictor's fixed 15-step computation fell from 40.05 milliseconds to 32.28 milliseconds. In a separate comparison using three streaming inputs, the generated audio was byte-for-byte identical before and after optimization.</p>
+<p>Test conditions: identical inputs, with the original and optimized paths run alternately over 10 rounds. These timings measure predictor computation, including invocation and waiting.</p>
+<p>In the complete speech pipeline, we also implemented stateful chunked generation, allowing the device to provide playable audio while synthesis continues. In a local test with 10 sessions, the median wait from the service receiving text to emitting the first audio chunk was approximately 0.37 seconds. A separate 30-minute synthesis test completed 357 utterances with 0 failures.</p>
+<p>This optimization retains the existing weights and reduces computation time by changing how execution is organized. It illustrates our approach to model optimization on heterogeneous devices: combine an understanding of model structure with the platform's execution characteristics to organize the computation that actually needs to take place.</p>
+<p>From resource management in long conversations, through continuity of state during multimodal transitions, to reorganized speech generation, we have established concrete engineering capabilities for keeping models resident and interactions ongoing. Together, they support NI's research direction: enabling the observation, inference, and state accumulation on which learning depends to continue on users' devices.</p>
+<h3 id="s4-8">4.8 From Existing Foundations to the Next Generation</h3>
+<p>We already have concrete foundations in device operation, representation analysis, on-device incremental learning, tool-contract support, personal state in inference, direction processing, and state restoration. New records and corrections can enter the learning workflow, and updated learning artifacts can be saved, activated, and used in subsequent inference.</p>
+<p>The next generation will evolve from this operating learning loop, expanding methods for representation, updating, and consolidation. What can accumulate will extend from personal characteristics and tool usage to contextual understanding, action consequences, and transferable strategies.</p>
+<h2 id="s5">5. Why Do Language, World Models, and Agents Come Together Here?</h2>
+<h3 id="s5-1">5.1 Understanding Not Only What Happened, but What Could Happen</h3>
+<p>Language models are adept at working with structure, knowledge, and expression in language. World models direct our attention to another question: if a particular action is taken in the current situation, how might the environment change?</p>
+<p>The original <a href="https://worldmodels.github.io/" target="_blank" rel="noopener">World Models</a> work connects perceptual representations, temporal prediction, and control. <a href="https://arxiv.org/abs/2301.04104" target="_blank" rel="noopener">Dreamer</a> further demonstrates a route to learning behavior through imagined trajectories based on internal predictions. What matters to us is the underlying principle: representations should serve consequence prediction and decision-making.</p>
+<p>For NI, this suggests an important direction. The value of experience lies not only in being able to answer “what happened?” later, but also in helping us judge “under these conditions, what might happen next?”</p>
+<p>Predicting consequences requires representations to preserve the relationships among actions, temporal order, and environmental conditions. We want models to identify which conditions an outcome depends on, then correct internal predictions using real feedback to reduce error accumulation across successive imagined steps.</p>
+<h3 id="s5-2">5.2 The Device Is the Agent: Models Enter the Environment Through Devices</h3>
+<p>In our research, an agent is the form a model takes when it enters a loop of goals, observations, actions, and feedback. The device provides local computation, sensing and interaction interfaces, and executable actions. The model provides understanding, prediction, and action selection. NI allows changes formed through experience to be retained, updated, and used again. Together, they enable the device to operate as an agent in its own environment.</p>
+<p>This also explains why we place computing capability at the foundation of the agent concept: a device must be able to process information locally, run models, and manage learning state to exercise judgment and learn through continued interaction. Phones, laptops, and other heterogeneous devices can differ in computing power, sensing capabilities, and available actions. Our research aims to let them take on different roles according to their capabilities, collaborate with user authorization, and carry prior learning forward.</p>
+<p>Such an agent can actively obtain information, use tools to change its environment, and recall earlier attempts.</p>
+<p>This changes the learning problem. In passive reading, what comes next is largely determined externally. In active interaction, the agent's choices affect its future data. It can keep doing familiar things, or incur a reasonable cost to resolve an uncertain judgment.</p>
+<p>Autonomous learning therefore concerns not only how to write new content, but also what to observe next. Learning to ask valuable questions, assess the reliability of feedback, and recognize what is not yet known can themselves become capabilities.</p>
+<h3 id="s5-3">5.3 Learning Through Games: How Does Experience Become Capability?</h3>
+<p>We find games a useful way to understand this. An agent enters an unfamiliar environment, tries actions, observes results, gradually discovers which conditions matter, and develops reusable ways of judging. Rather than memorizing the record of every game, experience changes how it approaches the next one.</p>
+<p>In this setting, learning appears as continuing change: earlier experience affects later strategies, successful methods are consolidated, mistaken understanding is corrected, and behavior can readjust when the environment changes. We will observe and test the accumulation of capabilities through these changes.</p>
+<p><strong>Completing the current task and becoming more capable through the current task are related but distinct goals.</strong> Continual learning brings the second goal into system design and evaluation as well.</p>
+<h3 id="s5-4">5.4 Could These Functions Be Unified in One Model?</h3>
+<p>Unifying language expression, environment prediction, and action selection is an important research direction for us. These functions could share internal representations, allowing a model's understanding of the world to support expression, internal simulation, and action together.</p>
+<p><a href="https://arxiv.org/abs/2506.21539" target="_blank" rel="noopener">WorldVLA</a> uses a unified autoregressive model for action generation and future visual prediction, offering a concrete reference for this kind of functional unification. Our next question is how continual updating and experience consolidation can become part of such a unified structure.</p>
+<p>Our deeper aspiration is for the model's explanations, predictions, and actions to rest on a coherent understanding. Shared representations could reduce fragmentation and conversion between components. They also require us to address interactions among functions, including how errors are detected, contained, and corrected.</p>
+<p>We therefore treat architectural unification and continual updating as connected research questions: the former joins understanding, prediction, and action; the latter allows those capabilities to keep growing with new experience.</p>
+<h3 id="s5-5">5.5 What Role Does Each Part Play?</h3>
+<p>Language and multimodal capabilities help a model understand and express information. World modeling helps it predict consequences. NI studies how experience continually changes model state that can be used. An agent places these capabilities in real interaction, while evaluation environments test what those changes actually accomplish.</p>
+<p>These responsibilities can be organized in different architectures or gradually unified in a single model. The key relationship remains clear: the model changes internally, the agent gains experience in the environment, and evaluation tests the results through independent tasks.</p>
+<h2 id="s6">6. Technical Methods and Philosophical Insights: How Should Learning Mechanisms Be Designed?</h2>
+<p>We design methods around concrete learning questions: how experience is represented, how it causes updates, how it is used again, and how the whole process continues over time.</p>
+<h3 id="s6-1">6.1 Start with Representations That Preserve the Distinctions That Matter</h3>
+<p>If two events with entirely different consequences are represented by nearly identical states, even a sophisticated reading mechanism may confuse them. If different expressions of the same thing lie far apart, what is written and what is queried may fail to match.</p>
+<p>Representation is therefore more than converting input into a string of numbers. It determines which differences survive and which relationships can readily be used. For continual learning, representations should support recall, judgment, and consequence prediction together, rather than merely place similar wording close together.</p>
+<p>One direction worth investigating is allowing representations to keep adapting to new feedback. But adaptation creates a difficulty of its own: if the representation space changes, can previously written states still be understood? We need not only to learn how to write, but also to maintain a usable relationship between old and new representations.</p>
+<h3 id="s6-2">6.2 Associative Memory: Giving “Layered Notes” Rules for Reading and Writing</h3>
+<p>Associative memory uses cues to find content. A current question, for example, provides cues through which a model accesses relevant information from prior experience. Rapidly changing weights or states allow new cues and content to become associated inside the model; at read time, the current cue activates relevant information.</p>
+<p>Simple superposition creates interference. <a href="https://arxiv.org/abs/2102.11174" target="_blank" rel="noopener">Writing based on prediction error</a> can instead correct an existing mapping, rather than merely add another trace. Research of this kind takes “walls” and “layered notes” from metaphor to update rules that can be analyzed.</p>
+<p>Reading and writing natural language also require cue alignment: the same experience may be queried in different words, while similar wording may contain opposite conditions. How addresses are formed, how variation in expression is tolerated, and how crucial differences are preserved are central questions when associative memory enters real interaction.</p>
+<p>The next generation will study capacity, retrieval reliability, and expressions of uncertainty together, so that structures already written can be used accurately in relevant situations.</p>
+<h3 id="s6-3">6.3 First Learn How to Read and Write, Then Keep Taking in Experience: Lessons from TTT</h3>
+<p>“First teach it how to attach, find, and understand notes; then keep giving it new ones” is an important research idea. It separates a general learning mechanism from the changes caused by each particular experience.</p>
+<p><a href="https://proceedings.mlr.press/v235/das24a.html" target="_blank" rel="noopener">Larimar</a> connects encoding, distributed memory, and decoding to study rapid knowledge updates. <a href="https://arxiv.org/abs/2402.04624" target="_blank" rel="noopener">MemoryLLM</a> investigates a self-updatable internal memory pool. For us, their most valuable insight is that the coordination of reading and writing can itself be learned. Developing a mechanism for absorbing new experience, then allowing experience during use to continually update model state, is a path worth exploring in depth.</p>
+<p>The key is to design representation, writing, and reading together. We will evaluate this coordination under device-resource constraints, long-term updating, and data-locality requirements, measuring separately the cost of developing a learning mechanism and the cost of using it day to day.</p>
+<p><strong>Test-Time Training (TTT) brings learning updates into model use.</strong> After encountering a new input, the model adjusts trainable parameters according to a learning objective, then uses the updated model to perform the task. The <a href="https://proceedings.mlr.press/v119/sun20b.html" target="_blank" rel="noopener">original TTT research</a> constructs self-supervised tasks from the input itself, updating the feature extractor without human-provided labels for the current sample to adapt to inputs that differ from the original training data. Training here genuinely changes parameters; generating additional rounds of answers or spending longer on inference is a different way of allocating computation. Related discussion is also available in this <a href="https://xhslink.cn/o/7PvwSKGoFnL" target="_blank" rel="noopener">TTT post</a>.</p>
+<p>TTT updates can be retained in different ways. In the standard version of the original work, adaptation begins from the same starting point for each input, and the update is discarded after prediction. The online version carries forward the parameters updated on the preceding input. This distinction directly connects to NI's research question: how can a change learned in the current task become understanding that remains usable and revisable next time? TTT provides a method for updating during use; test-time continual learning further examines retention, consolidation, and long-term accumulation of those changes.</p>
+<p><strong>TTT Layers bring this idea into the model's internal sequence-processing architecture.</strong> <a href="https://arxiv.org/html/2407.04620v2" target="_blank" rel="noopener">“Learning to (Learn at Test Time)”</a> makes the hidden state itself a small trainable model: when new input arrives, self-supervised learning updates its weights, and the updated state is then used to process information. Outer-loop training learns representations, transformations involved in reading and writing, and other model parameters; inner-loop updates compress information from the current sequence into fast-changing weights.</p>
+<p>This offers a concrete reference for “first learn how to attach notes, then keep receiving new ones”: a relatively stable learning mechanism can drive rapid changes during use. The research organizes fast state around input sequences. Applying such mechanisms to NI also requires designing retention across sessions, controlling interference among experiences, and consolidating fast state into long-term capabilities. We will study these questions alongside the multi-timescale design discussed next.</p>
+<p>For NI, TTT is attractive because it makes learning a mechanism available during operation. We can investigate how update signals arise from prediction errors, input structure, or action feedback, and which parts should adapt quickly versus which judgments need more evidence before changing. Self-supervised updating is one concrete route; developing and using a learning mechanism does not necessarily depend on reinforcement-learning rewards.</p>
+<p>“Learning to learn” becomes three concrete questions: how the system uses new evidence to decide what to update, how it distinguishes anomalies from patterns, and when it should revisit or revise an understanding it has already formed.</p>
+<h3 id="s6-4">6.4 Multiple Timescales: Fresh Experience and Stable Capabilities Need Not Change at the Same Rate</h3>
+<p>Something that has just happened often needs to become usable quickly. A judgment developed over time should not be overturned by a single chance observation. If all content uses the same write strength, retention period, and forgetting rate, the system will struggle to be both responsive and stable.</p>
+<p>Multiple timescales are an important direction for our next-generation research. Fast state handles immediate changes; slower state retains structures supported by more evidence. Periodic integration then determines which experiences deserve to become more stable capabilities.</p>
+<p><a href="https://arxiv.org/abs/2501.00663" target="_blank" rel="noopener">Titans</a> combines memory that can be updated during operation, forgetting mechanisms, and different information pathways, offering a reference for this design. We focus on how those mechanisms divide their roles and on the trade-offs among extra computation, state capacity, and long-term retention.</p>
+<p>Consolidation emerges through effective coordination across timescales: new experience enters fast state, valuable structures gradually stabilize, and prior understanding is reorganized in light of new evidence. How information is exchanged and which conditions are retained determine the practical effect of this coordination.</p>
+<p>Returning to the earlier memory distinction, a model can retain the important context of a specific experience and also develop more general understanding across experiences. These functions and their update rates need to be designed separately: some specific episodes deserve long-term retention, while some general judgments need rapid correction. We will organize updating and consolidation according to the role of the content and the strength of the evidence.</p>
+<h3 id="s6-5">6.5 Writing, Forgetting, and Recall All Involve Trade-offs</h3>
+<p>Surprising experiences deserve attention: when outcomes differ greatly from predictions, prior understanding may need to change. An update mechanism must also distinguish meaningful new evidence from random noise, so that limited learning resources go toward changes that matter.</p>
+<p>We will study novelty, reliability, task value, and long-term impact together. Frequent events can matter, but so can rare exceptions with serious consequences. Recently acquired understanding may be more current, yet understanding accumulated over time should not be erased casually.</p>
+<p>An update gate determines how much to write, a forget gate determines what to retain or decay, and a reading mechanism determines what to use now. These controls need to relate to the importance, reliability, and applicability of the content, coordinating writing, retention, and access within finite capacity.</p>
+<p>Recall also requires selection. The value of continual learning is not in reviewing an entire lifetime before every answer, but in accessing useful structure for the present situation and recognizing what needs to be added when that structure is insufficient.</p>
+<h3 id="s6-6">6.6 A Philosophical Lesson from Chips: How Can General Mechanisms Handle Future Tasks?</h3>
+<p>A chip does not need advance knowledge of every future program. As long as a program meets its instruction and execution requirements, the chip can compute using its existing mechanisms. This suggests a principle: <strong>stable underlying mechanisms can support content and tasks that arrive later.</strong></p>
+<p>For continual learning, we cannot prepare all of a user's future experiences in advance. We seek to understand whether a model can acquire a mechanism for absorbing new experiences without a separate set of semantic rules being written for every new domain, correction, and user.</p>
+<p>Chips generally execute externally supplied programs. Agents must also discover patterns in incomplete, noisy feedback and even judge whether the questions they pose are appropriate. This gives a learning mechanism a further responsibility: it must both accept new content and assess the reliability of new understanding.</p>
+<p>Our central conclusion from this analogy is that <strong>stable underlying mechanisms can support an expanding range of knowledge and capabilities.</strong> We are looking for learning mechanisms that accept later experiences, test new understanding, and keep developing capabilities.</p>
+<h3 id="s6-7">6.7 Lessons from Heterogeneous Integration: Division of Roles and Interconnection, Not Just More Layers</h3>
+<p>Three-dimensional chip integration combines components with different functions and fabrication processes through close interconnection. The division of roles and approach to interconnection embodied in <a href="https://3dfabric.tsmc.com/english/dedicatedFoundry/technology/SoIC.htm" target="_blank" rel="noopener">TSMC SoIC</a> also offer a useful perspective on coordination inside a model.</p>
+<p>Through this engineering analogy, we consider three questions: could different kinds of state use different representations? How should mechanisms with different update rates exchange useful information? Do the connections added to increase capacity bring acceptable reading and communication costs?</p>
+<p>Capacity need not come only from a deeper backbone. It could also come from <a href="https://arxiv.org/abs/1606.04671" target="_blank" rel="noopener">new modules</a>, subspaces, or different forms of organization. Additional capacity becomes a practical capability only when learning mechanisms can write to it and inference can use it.</p>
+<p>For us, the most valuable insight is to consider trade-offs at the system level: not only how much can be held, but how it can be accessed, updated, and coordinated—and what those capabilities cost.</p>
+<h2 id="s7">7. What Are the Hard Problems We Need to Solve?</h2>
+<h3 id="s7-1">7.1 Compression Must Serve Tasks Not Yet Encountered</h3>
+<p>A representation designed only for the current question may discard a crucial cue for the next one. We need to balance the breadth of retained content, the depth of its organization, and resource cost, so that representations formed now can support a broader range of future questions.</p>
+<p>Next-generation NI therefore faces not a single compression ratio, but a trade-off curve: within an explicit resource budget, how much useful structure can be retained, how broad a range of future tasks can it support, and where do omissions occur?</p>
+<p>“Important” is consequently not a permanent label. An apparently minor experience may take on new meaning when the environment changes. Preserving the possibility of reinterpreting the past is a deeper problem than choosing a summary length.</p>
+<h3 id="s7-2">7.2 How Does a Change in State Become a Change in Capability?</h3>
+<p>The hardest part may not be changing a matrix, but getting a model to use that change correctly.</p>
+<p>Personalized expression, accurate recall, task efficiency, and judgment under unfamiliar conditions are different dimensions of improvement. Continual learning research must identify which changes come from patterns in experience, which depend on retaining particular content, and whether those changes can continue to accumulate.</p>
+<p>We will compare behavior with and without learning updates while controlling context, tools, and computational budgets. Attributing contributions to specific mechanisms is how we determine which representations, update methods, or reading mechanisms to strengthen next.</p>
+<h3 id="s7-3">7.3 From Correlation to Reliable Judgments About Action Consequences</h3>
+<p>Moving from associations among events to judgments about action consequences requires identifying environmental conditions, the timing of feedback, and potential contributing factors. The same action may have different results in different situations, and learning should preserve this conditionality.</p>
+<p>The agent must therefore address attribution: after a success or failure, which step or condition should it revise its understanding of? Generalizing too early can produce false rules; treating every exception as a new rule can leave it unable to act coherently.</p>
+<p>World modeling can contribute to this process: predict the consequences of an action, compare them with real feedback, and revise understanding through new observations and attempts. We see this testable relationship between prediction and action as a key step in turning understanding into capability.</p>
+<h3 id="s7-4">7.4 Balancing New Experience with Retention of Existing Capabilities</h3>
+<p>Plasticity allows a model to accept new information; stability allows it to retain understanding that remains valid. Excessive stability rejects genuine change, while excessive plasticity can let a single anomalous experience lead the model astray.</p>
+<p>We advocate learning mechanisms that preserve uncertainty, distinguish conditions of applicability, allow provisional explanations to coexist, and decide how to integrate them as more evidence arrives. This allows a model to accept change while resisting incidental noise.</p>
+<p>Forgetting manages retention and decay, correction revises existing understanding, and deletion implements the user's decisions about what to keep. Each requires clear semantics, and all three belong in the learning-state lifecycle.</p>
+<h3 id="s7-5">7.5 On-Device Constraints Must Be Part of the Algorithm</h3>
+<p>A learning-state file mounted for inference may be small yet expensive to update. A mechanism that reads quickly may require substantial auxiliary state. We will include the costs of encoding, updating, temporary storage, and restoration together in algorithm design.</p>
+<p>We need to coordinate resource use between everyday inference and learning: lightweight updates should respond promptly, heavier reorganization should be scheduled appropriately, and ongoing interaction should remain usable. When computation happens, how much state is retained, and what updates achieve should be designed alongside the learning objective.</p>
+<p>Differences in device memory, power use, and usage patterns lead to different algorithmic trade-offs. Our existing runtime work makes it possible to measure and compare these questions in real environments, grounding algorithm design in actual operating conditions.</p>
+<h3 id="s7-6">7.6 Across Devices and Heterogeneous Environments: What Exactly Is Being Transferred?</h3>
+<p>We want users to carry the results of learning with them across devices. Achieving that requires addressing three kinds of transfer.</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>What is transferred</th>
+<th>The question that needs to be answered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Learning mechanism</td>
+<td>Can the same principle work with different computation, memory, and operating environments?</td>
+</tr>
+<tr>
+<td>Learning state</td>
+<td>Can existing state be restored under compatible conditions, and how should it be converted when representations differ?</td>
+</tr>
+<tr>
+<td>Acquired capabilities</td>
+<td>When sensing modalities, tools, and action spaces change, which parts of prior understanding remain useful?</td>
+</tr>
+</tbody>
+</table></div>
+<p>We already have an implementation foundation for transferring and restoring compatible state, providing a practical path to learning continuity under compatible configurations of the same model.</p>
+<p class="source-note"><sub>Source: AtomGradient internal research.</sub></p>
+<p>The next step is to further investigate the connections among different model representations, sensing modalities, and action spaces.</p>
+<p>“The model is the product” gives transfer a clear research objective: once a learning artifact enters a compatible device, it should support the use of prior understanding and continued learning from new experience. We will separately examine whether capabilities are retained, whether updating continues, and which states must be carried to support both. What the model needs from past experience should increasingly be embodied in its own acquired understanding.</p>
+<p>Internal state depends on how a model represents information. Layer structures, numerical coordinates, and action semantics can differ across models, so transfer must address representation alignment and capability reuse. Applying prior planning experience to another kind of device, for example, requires connecting it to that device's sensing and execution methods.</p>
+<p>The core of heterogeneous transfer is identifying which understanding can be shared and which details must adapt to a new platform. What we seek to carry forward is understanding and capability that can keep growing in a new environment.</p>
+<h2 id="s8">8. Comparisons and Lessons from AgentOdyssey</h2>
+<h3 id="s8-1">8.1 What Observable Comparisons Does It Provide?</h3>
+<p><a href="https://arxiv.org/html/2606.24893v1" target="_blank" rel="noopener">AgentOdyssey</a> is a benchmark that uses procedurally generated game environments to observe how agents learn through extended interaction. Agents encounter new situations, choose actions, experience consequences, and then tackle problems that depend on earlier experience. Its value is in making the learning process and its effects observable.</p>
+<p>It lets us ask more concrete questions: what environmental knowledge did the agent acquire? Did it retain important experiences? Did exploration yield valuable information? Did these changes help it advance the task?</p>
+<p>The <a href="https://agentodyssey.github.io/docs/evaluation-metrics" target="_blank" rel="noopener">official evaluation</a> includes task performance, world-knowledge questions before and after interaction, episodic memory, and exploration. These dimensions are better suited to analyzing the effects of experience than checking only whether the agent ultimately completes the game.</p>
+<p>We will examine these dimensions together: what does recall contribute to judgment, what new understanding comes from exploration, and how does environmental knowledge change action? This lets us see the complete progression from retaining experience to using it.</p>
+<h3 id="s8-2">8.2 Trade-offs with External Retrieval, Accumulated Context, and Other Approaches</h3>
+<p>A broader range of permitted methods gives us a rich set of <a href="https://agentodyssey.github.io/docs/agent/agent-paradigms" target="_blank" rel="noopener">comparisons</a>. We are interested in what each approach solves, what it costs, and what it contributes to continual learning research.</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>Approach</th>
+<th>What it provides well</th>
+<th>What it helps us study</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Continuing to add history to the context</td>
+<td>Direct access to more experiences within the model's current computation</td>
+<td>Compare direct use of history with internal accumulation in terms of effectiveness, latency, and resource growth</td>
+</tr>
+<tr>
+<td>Storing material externally and retrieving it as needed</td>
+<td>Inspectable, updatable original content and its sources</td>
+<td>Compare the value of precise retrieval with that of internalized patterns, rather than only checking whether answers match</td>
+</tr>
+<tr>
+<td>Organizing history into textual summaries</td>
+<td>Conveying important prior information in less text</td>
+<td>Examine what linguistic summarization preserves and how repeated summarization introduces distortion</td>
+</tr>
+<tr>
+<td>Changing usable internal model state</td>
+<td>Letting experience alter the conditions or mechanisms of subsequent computation</td>
+<td>Examine whether changes persist, are used correctly, and incur acceptable updating and restoration costs</td>
+</tr>
+</tbody>
+</table></div>
+<p>These approaches can be combined. NI focuses on internalizing experience and continual learning, while precise facts can be accessed through tools from authoritative sources. Through comparison, we identify the strengths, resource costs, and applicable conditions of different mechanisms before deciding how to organize them.</p>
+<p>Comparisons can use the same starting point and similar resource budgets to identify a mechanism's contribution. They can also report performance across different budgets to assess practical value. Together, these perspectives support evidence-based trade-offs.</p>
+<h3 id="s8-3">8.3 Applying These References to NI's Long-Term Learning Research</h3>
+<p>Drawing on AgentOdyssey's interaction tasks and evaluation dimensions, our experiments will examine adaptation within an environment, long-term retention, and accumulation across environments separately, then test these questions on real devices.</p>
+<p>For example, <a href="https://ttcl-agents.github.io/#challenge" target="_blank" rel="noopener">resetting state between games</a> is suited to observing how new understanding develops within one environment. Retaining state across environments helps investigate retention, transfer, and interference involving earlier experience. The protocol should match the learning question we actually want to answer.</p>
+<p>AgentOdyssey's task organization and comparative methods help us analyze what knowledge an experience brings and how that knowledge changes later action. For NI, these references ultimately serve long-term learning on real devices: enabling models to keep building understanding and refining judgment and action through everyday use.</p>
+<h2 id="s9">9. How Do We Establish That Continual Learning Has Taken Place?</h2>
+<h3 id="s9-1">9.1 Look Beyond the Outcome to Where the Change Came From</h3>
+<p>The next stage of experiments will address explicit learning questions, using corresponding observations and comparisons to identify the contribution of each mechanism.</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>Question</th>
+<th>Evidence to examine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Has experience entered usable state?</td>
+<td>Whether the specified learning state supports later tasks without supplying the same history again</td>
+</tr>
+<tr>
+<td>Do updates actually have an effect?</td>
+<td>Compare enabled and disabled updates while controlling additional context, tools, and computational budgets</td>
+</tr>
+<tr>
+<td>Does the result go beyond repeating the original question?</td>
+<td>Test new wording, combinations of conditions, and independent tasks, rather than simply repeating old questions</td>
+</tr>
+<tr>
+<td>Are capabilities retained and revised?</td>
+<td>Add experience continually, checking prior capabilities, conflicting evidence, and unrelated tasks</td>
+</tr>
+<tr>
+<td>Has learning continuity been established?</td>
+<td>After restoration, check not only whether old state can be read, but also whether new experience can be accepted and updates remain effective</td>
+</tr>
+<tr>
+<td>Does the mechanism have practical operating value?</td>
+<td>Record the full state, update costs, inference costs, and operating reliability together</td>
+</tr>
+</tbody>
+</table></div>
+<p>Cache reuse, recall, generalization from experience, and capability integration can coexist in one system. We will measure their contributions separately and observe how they support continued growth together.</p>
+<p>Validation will also connect different levels: mathematical analysis helps explain capacity and interference; natural-language tasks test representation and reading; environmental interaction tests changes in action; and device experiments test the feasibility of long-term operation.</p>
+<p>To study whether the model can carry its learning independently and across devices, we will also test whether, after restoring the complete learning artifact without supplying the original experiences again, it can recall relevant episodes, use existing knowledge, and keep revising its understanding with new feedback. This connects the states being carried with the capabilities being continued.</p>
+<h3 id="s9-2">9.2 Let Scientific Questions Determine the Experimental Sequence</h3>
+<p>One reasonable sequence is to first establish a minimal working loop of representation, updating, and reading, then examine retention and revision across successive experiences, before moving to more complex actions, transfer, and device conditions.</p>
+<p>This order makes problems easier to locate. If reading fails, we can first examine representation and cue alignment. If performance deteriorates over time, we can investigate capacity, interference, and update strategies. After state restoration, we can test whether new experiences continue to be absorbed correctly.</p>
+<p>World-model evaluation likewise connects prediction and action: it measures both prediction accuracy and what those predictions contribute to decisions. Our aim is to make models better able to face the future.</p>
+<h3 id="s9-3">9.3 Separate Learning Experiences from Independent Tests</h3>
+<p>Episodic-memory evaluation asks whether experiences have been retained; generalization evaluation asks whether acquired understanding can be used on unseen tasks. We report these capabilities separately so that each result has a clear meaning.</p>
+<p>Answers to independent tests, hidden environmental information, and scoring criteria should be kept separate from the learning process. Tasks used to select a method should also be distinct from those used for final evaluation. This design allows results to reflect the actual contribution of learning.</p>
+<p>Semantic targets and evaluation criteria for real data need to come from an independent, traceable evaluation process. We test different methods under consistent conditions and report both successes and failures faithfully.</p>
+<p>Real records help us study the distribution of everyday information, while interactive environments add actions and feedback. We will cover different users and scenarios and progressively examine the range of applicability. Keeping data local and obtaining user authorization remain prerequisites throughout.</p>
+<h3 id="s9-4">9.4 Resource Accounting Must Cover Both Use and Continued Learning</h3>
+<p>Resource evaluation must distinguish at least three things: what the learning process must retain, what must be loaded for inference, and what is needed for the next update.</p>
+<p>It must also count input context, temporary memory, encoding computation, and state-restoration costs. Dependencies such as external indexes and auxiliary update state belong in a method's full resource accounting as well.</p>
+<p>We evaluate approaches by the relationship between capabilities and their full costs, judging whether a mechanism can progress from experiment to long-term use.</p>
+<h2 id="s10">10. Our Research Choices and Open Trade-offs</h2>
+<p>Our direction is clear: NI has always pursued continual learning; intelligence goes to the data; models and their learning states carry what has been learned; and growth should continue on real devices in changing environments.</p>
+<p>The implementation remains open. We select methods according to how well representation, updating, and consolidation work in practice, and assess research contributions by continued capability development and long-term operating value.</p>
+<h3 id="s10-1">10.1 Which Changes Should Become Part of the Model?</h3>
+<p>Temporary conditions of the current task, observations awaiting confirmation, and well-established patterns should be handled differently. Allowing important understanding to gradually become established is a central trade-off in continual learning under finite resources.</p>
+<p>A learning mechanism should make clear which changes are retained, on what basis, and how they are revised when new evidence arrives. Selecting structures worth accumulating over time is itself a necessary capability of continual learning.</p>
+<h3 id="s10-2">10.2 How Should Capacity Growth and Consolidation Be Coordinated?</h3>
+<p>Fixed budgets, budgets tailored to device capabilities, and moderate capacity expansion each have costs. We will study capacity management together with experience consolidation, making better use of existing state while evaluating the benefits and costs of measured expansion.</p>
+<p>Rapid absorption, periodic integration, and longer-term capability retention need coordinated rhythms. The next generation will investigate information exchange and scheduling among these processes, so that everyday updating and long-term accumulation support one another.</p>
+<h3 id="s10-3">10.3 How Can Autonomous Learning Coexist with User Control?</h3>
+<p>Environmental feedback helps a model judge what deserves attention. Users determine the scope of learning and the boundaries for state retention and transfer. Initiative in learning and human control need to be realized within the same design.</p>
+<p>An agent should actively observe, update, and review within clearly authorized boundaries, while users can understand, undo, and restore the relevant changes. Control extends throughout the learning process.</p>
+<h3 id="s10-4">10.4 Different Devices Can Take Different Roles</h3>
+<p>Devices differ in computing power and usage patterns. Everyday adaptation and heavier reorganization need not happen at the same time or in the same way.</p>
+<p>This division of work will depend on data remaining local, compatibility, and user authorization, with computation allocated according to each device's resources and capabilities. We will validate it under specific device conditions so that learning continuity matches what can actually run.</p>
+<p>We hold to clear goals and revisable methods: knowing why we do the work, while allowing evidence to change how we do it.</p>
+<h2 id="s11">11. Conclusion: Models That Keep Developing Capabilities Through Experience</h2>
+<p>From its first generation to the next, NI has always centered on continual learning. Paper notes and walls help us think about how experience is organized; compression and forgetting help us consider what should be retained; games and world models help us examine how actions, consequences, and understanding affect one another; and the general mechanisms of chips inspire us to ask how to handle tasks that have not yet appeared.</p>
+<p>We have also done practical work on these questions. The technology stack developed around NI connects model optimization, inference runtimes, learning mechanisms, tool integration, and cross-device state management, giving continual learning an operational foundation on devices. On-device incremental learning already connects new records, updates to personal characteristics, and subsequent inference. The next generation will build on these foundations to investigate finer-grained updates, experience consolidation, ongoing correction, and learning continuity across devices.</p>
+<p>We are working toward a model that continually develops understanding, refines judgment, improves action, and revises itself in the face of new evidence. Memory participates in this process; the ongoing development of capability remains its purpose throughout.</p>
+<p>The device is the agent; the model is its intelligent core, capable of growth and transfer; and NI enables that growth to continue. “The model is the product” expresses our aspiration for this accumulation: the understanding and capabilities formed through long-term interaction should travel with the model to new compatible devices and continue developing through new experiences.</p>
+<p><strong>When intelligence goes to the data, growth should happen where experience takes place.</strong></p>
+<p>We test this path with a simple question: without repeated reminders or being given the same history again, is the model genuinely better able to handle the next situation because of what it has experienced before?</p>
+<h2 id="appendix-a">Appendix A: Quick Glossary</h2>
+<p>These explanations support the reading of this paper; no prior familiarity with every research field is assumed.</p>
+<div class="table-wrap"><table class="wide">
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning in this paper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neural Imprint (NI)</td>
+<td>A continual learning algorithm and algorithmic architecture developed by AtomGradient, with a supporting technology stack that enables models to run, learn, and keep growing on devices</td>
+</tr>
+<tr>
+<td>Device agent</td>
+<td>A computing-capable device that brings together a model, sensing and action interfaces, and learning state to organize observation, action, feedback, and learning</td>
+</tr>
+<tr>
+<td>Continual learning</td>
+<td>Acquiring, retaining, and revising knowledge and capabilities through successive experiences while addressing environmental change and retention of earlier capabilities</td>
+</tr>
+<tr>
+<td>Incremental learning</td>
+<td>Absorbing new information on the basis of prior learning, without assuming that each update starts from scratch</td>
+</tr>
+<tr>
+<td>Test-Time Continual Learning (TTCL)</td>
+<td>Continued adaptation and capability consolidation during deployment and use, rather than training only before delivery</td>
+</tr>
+<tr>
+<td>Test-Time Training (TTT)</td>
+<td>Updating trainable parameters during use according to a learning objective; updates may serve the current input or be retained afterward, depending on the design</td>
+</tr>
+<tr>
+<td>TTT Layers</td>
+<td>Sequence-processing layers whose hidden state is a small trainable model, compressing information from the current sequence through learning updates during use</td>
+</tr>
+<tr>
+<td>The model is the product</td>
+<td>Product value accumulates as the model learns; acquired understanding and capabilities are carried by the complete model and its internal learning states, with transfer and continued growth as goals</td>
+</tr>
+<tr>
+<td>Model weights (parameters)</td>
+<td>Numerical values used in model computation; training can adjust them, while inference uses them to process input</td>
+</tr>
+<tr>
+<td>Inference runtime</td>
+<td>Software that arranges model computation, memory use, and state management, enabling a model to run on a particular device</td>
+</tr>
+<tr>
+<td>Internal state</td>
+<td>Numerical information that can be read or updated during model computation; this paper focuses on the parts that can carry learning outcomes and continue to participate in computation</td>
+</tr>
+<tr>
+<td>Activations and representations</td>
+<td>Internal numerical values formed as a model processes input; representations help organize the content and relationships within that input</td>
+</tr>
+<tr>
+<td>Latent representation</td>
+<td>An internal form used to represent content and relationships; the information it retains determines what can later be read or generated</td>
+</tr>
+<tr>
+<td>RPP</td>
+<td>A mechanism for analyzing personally relevant structure in model activations, involving residualization, principal component analysis, and stability checks</td>
+</tr>
+<tr>
+<td>DSR (Dual-Sparse Retention)</td>
+<td>Dual-sparse token retention: a mechanism in our runtime that manages historical cache retention using attention scores, recent content, and layer-specific budgets</td>
+</tr>
+<tr>
+<td>FrogJump</td>
+<td>An inference execution mechanism that skips selected computation layers according to a plan, under supported models and operating modes</td>
+</tr>
+<tr>
+<td>Episodic memory</td>
+<td>Retention and recall of specific experiences and their context, including conditions, actions, and consequences; discussed functionally here without presupposing a separate module</td>
+</tr>
+<tr>
+<td>Semantic memory</td>
+<td>Knowledge of facts, concepts, and patterns that can be used without replaying the experience in which it was first acquired</td>
+</tr>
+<tr>
+<td>Factual memory and exact factual recall</td>
+<td>The former broadly refers to retaining factual content, which can occur in episodic or semantic memory; the latter specifically refers here to accurately answering questions about the details of original records</td>
+</tr>
+<tr>
+<td>Adaptive reasoning</td>
+<td>Addressing new problems by combining prior understanding with current conditions, and revising judgments based on new evidence; memory supplies material for this process</td>
+</tr>
+<tr>
+<td>World model</td>
+<td>A model that internally predicts environmental states and action consequences, supporting internal simulation and correction through real feedback</td>
+</tr>
+<tr>
+<td>Associative memory and fast weights</td>
+<td>Mechanisms that use cues to establish and read associations, and allow internal mappings to change rapidly with experience</td>
+</tr>
+<tr>
+<td>Consolidation</td>
+<td>Organizing new and old experiences into relatively stable, reusable understanding or capabilities, without restricting them to one particular form of storage</td>
+</tr>
+<tr>
+<td>Plasticity and stability</td>
+<td>The ability to accept new information and the ability to retain understanding that remains valid; the two need to be coordinated</td>
+</tr>
+<tr>
+<td>Activation Steering</td>
+<td>Adjusting internal activations during inference to influence subsequent computation, without requiring changes to model weights</td>
+</tr>
+<tr>
+<td>Directional Steering</td>
+<td>Our specific path for deriving directions from corrections and using them to influence subsequent computation; an implementation of activation intervention</td>
+</tr>
+<tr>
+<td>Generalization and transfer</td>
+<td>Generalization concerns effectiveness on unseen inputs; transfer further concerns reuse across different tasks, environments, or platforms</td>
+</tr>
+<tr>
+<td>Heterogeneity</td>
+<td>Differences in chips, operating environments, model representations, sensing modalities, or action spaces; discussion should specify which kind of difference is meant</td>
+</tr>
+<tr>
+<td>Token</td>
+<td>A unit of sequence processing in a model; it does not necessarily correspond to one Chinese character or one word</td>
+</tr>
+<tr>
+<td>Time to first token</td>
+<td>The wait from the start of the relevant request to the first output token, with the precise timing boundaries defined by the experiment</td>
+</tr>
+</tbody>
+</table></div>
+
+
+      <footer class="paper-footer">
+        <div class="license">
+          <span class="cc"><span>CC</span><span>BY</span><span>NC</span><span>ND</span></span>
+          <span>© 2026 AtomGradient (质子梯度（北京）科技有限公司). Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>: share with attribution; no derivatives, no commercial use.</span>
+        </div>
+        <h2>How to cite</h2>
+        <p>AtomGradient. Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning (Whitepaper v2). 2026-09-17. https://atomgradient.github.io/whitepapers/neural-imprint/en/</p>
+        <pre>@techreport{atomgradient2026ni_en,
+  title  = {Next-Generation NI: A Vision, Philosophy, and Technical Path for Continual Learning},
+  author = {{AtomGradient}},
+  year   = {2026},
+  month  = {09},
+  type   = {Whitepaper v2},
+  url    = {https://atomgradient.github.io/whitepapers/neural-imprint/en/}
+}</pre>
+        <p>Read online: <a href="https://atomgradient.github.io/whitepapers/neural-imprint/en/">https://atomgradient.github.io/whitepapers/neural-imprint/en/</a> · Changelog: <a href="https://github.com/AtomGradient/whitepapers" target="_blank" rel="noopener">github.com/AtomGradient/whitepapers</a> · Website: <a href="https://atomgradient.com" target="_blank" rel="noopener">atomgradient.com</a></p>
+      </footer>
+    </article>
+  </main>
+</div>
+<footer class="site-footer">© 2026 AtomGradient · <a href="https://atomgradient.com" target="_blank" rel="noopener">Official Site</a> · <a href="https://github.com/AtomGradient" target="_blank" rel="noopener">GitHub</a> · <a href="https://huggingface.co/AtomGradient" target="_blank" rel="noopener">Hugging Face</a></footer>
+<button class="totop" id="totop" aria-label="Back to top"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg></button>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  function getStored(){try{return localStorage.getItem('wp-theme')}catch(e){return null}}
+  function setStored(v){try{localStorage.setItem('wp-theme',v)}catch(e){}}
+  var stored=getStored(); if(stored==='dark'||stored==='light'){root.setAttribute('data-theme',stored)}
+  function current(){var t=root.getAttribute('data-theme'); if(t==='dark'||t==='light')return t; return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+  document.querySelectorAll('[data-theme-toggle]').forEach(function(b){b.addEventListener('click',function(){var n=current()==='dark'?'light':'dark';root.setAttribute('data-theme',n);setStored(n)})});
+
+  var sidebar=document.getElementById('sidebar'),scrim=document.getElementById('scrim'),tocBtn=document.getElementById('tocBtn');
+  function closeToc(){sidebar.classList.remove('open');scrim.classList.remove('show');tocBtn.setAttribute('aria-expanded','false')}
+  tocBtn.addEventListener('click',function(){var o=!sidebar.classList.contains('open');sidebar.classList.toggle('open',o);scrim.classList.toggle('show',o);tocBtn.setAttribute('aria-expanded',String(o))});
+  scrim.addEventListener('click',closeToc);
+  sidebar.addEventListener('click',function(e){if(e.target.closest('a[href^="#"]'))closeToc()});
+
+  var links=Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+  var byId={};links.forEach(function(a){byId[a.getAttribute('href').slice(1)]=a});
+  var heads=Array.prototype.slice.call(document.querySelectorAll('.article h2[id], .article h3[id]'));
+  var activeId=null;
+  function setActive(id){if(id===activeId)return;activeId=id;links.forEach(function(a){a.classList.remove('active')});var a=byId[id];if(a){a.classList.add('active');var r=a.getBoundingClientRect(),s=sidebar.getBoundingClientRect();if(r.top<s.top+40||r.bottom>s.bottom-40){a.scrollIntoView({block:'center'})}}}
+  function onScroll(){
+    var y=window.scrollY+130,cur=null;
+    for(var i=0;i<heads.length;i++){if(heads[i].offsetTop<=y)cur=heads[i].id;else break}
+    if(cur)setActive(cur);
+    var h=document.documentElement,p=h.scrollHeight-h.clientHeight;document.querySelector('.progress').style.width=(p>0?(window.scrollY/p*100):0)+'%';
+    document.getElementById('totop').classList.toggle('show',window.scrollY>900);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll);onScroll();
+  document.getElementById('totop').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+})();
+</script>
+</body>
+</html>

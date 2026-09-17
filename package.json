@@ -1,0 +1,14 @@
+{
+  "name": "atomgradient-whitepapers",
+  "private": true,
+  "type": "module",
+  "description": "Build scripts for AtomGradient whitepapers: Markdown -> static site (GitHub Pages) -> watermarked PDF",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "pdf": "node scripts/pdf.mjs",
+    "all": "npm run build && npm run pdf"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
