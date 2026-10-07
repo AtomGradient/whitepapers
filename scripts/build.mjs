@@ -269,7 +269,26 @@ function buildLanding(built) {
     .sort((a, b) => (a.published < b.published ? 1 : -1))
     .map((b) => `<li data-lang="${b.lang === "en" ? "en" : "zh"}"><b>${b.published}</b> · ${escapeHtml(b.shortTitle)} — ${b.ui.whitepaper} ${b.version}${b.lang === "en" ? " published" : " 发布"}</li>`)
     .join("\n");
-  const vars = { BASE, REPO, REPO_SHORT, LOGO, FAVICON, CARDS: cards, LOG: log };
+  // The hero leads with the newest whitepaper in each language, not with the site's name.
+  const latest = {};
+  for (const b of built) {
+    const key = b.lang === "en" ? "en" : "zh";
+    if (!latest[key] || b.published > latest[key].published) latest[key] = b;
+  }
+  const eyebrow = { zh: "质子梯度研究白皮书 · 最新发布", en: "AtomGradient whitepaper · Latest" };
+  const hero = Object.entries(latest)
+    .map(([key, b]) => `  <div class="hero-paper" data-lang="${key}">
+    <p class="eyebrow">${escapeHtml(eyebrow[key])}</p>
+    <h1><a href="${b.path}">${escapeHtml(b.title)}</a></h1>
+    <p class="tagline">${escapeHtml(b.subtitle)}</p>
+    <p class="desc">${escapeHtml(b.description)}</p>
+    <div class="hero-links">
+      <a class="primary" href="${b.path}">${escapeHtml(b.ui.readOnline)}</a>
+      <a href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>
+    </div>
+  </div>`)
+    .join("\n");
+  const vars = { BASE, REPO, REPO_SHORT, LOGO, FAVICON, HERO: hero, CARDS: cards, LOG: log };
   let page = readFileSync(resolve(ROOT, "scripts/landing.html"), "utf8");
   page = page.replace(/\{\{(\w+)\}\}/g, (m, k) => {
     if (!(k in vars)) throw new Error(`unfilled placeholder ${k}`);

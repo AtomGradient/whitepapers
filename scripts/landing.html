@@ -29,10 +29,18 @@ a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-hover);tex
 .lang button{background:none;border:0;padding:.35rem .5rem;border-radius:6px;color:var(--muted);cursor:pointer;font:inherit;font-size:.84rem}
 .lang button:hover{color:var(--text);background:var(--surface-2)}
 .lang button[aria-pressed="true"]{color:var(--text);background:var(--surface-2);font-weight:600}
-.hero{text-align:center;padding:5.5rem 1rem 4rem;max-width:44rem;margin:0 auto}
-.hero h1{font-size:3rem;line-height:1.15;letter-spacing:-.02em;margin:0 0 .8rem;font-weight:800}
-.hero .tagline{font-size:1.2rem;color:var(--muted);margin:0 0 1rem}
-.hero .desc{color:var(--muted);font-size:1rem;line-height:1.8;margin:0}
+.hero{text-align:center;padding:5rem 1rem 3rem;max-width:52rem;margin:0 auto}
+.hero .eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 1.2rem}
+.hero h1{font-size:2.9rem;line-height:1.2;letter-spacing:-.02em;margin:0 0 1rem;font-weight:800}
+.hero h1 a{color:var(--text)}.hero h1 a:hover{color:var(--accent-hover);text-decoration:none}
+.hero .tagline{font-size:1rem;color:var(--faint);margin:0 0 1.2rem}
+.hero .desc{color:var(--muted);font-size:1.05rem;line-height:1.8;margin:0 auto;max-width:44rem}
+.hero-links{display:flex;justify-content:center;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin-top:1.8rem;font-weight:500}
+.hero-links .primary{display:inline-flex;align-items:center;padding:.62rem 1.3rem;border-radius:999px;background:var(--text);color:var(--bg)}
+.hero-links .primary:hover{background:var(--accent);color:#fff;text-decoration:none}
+.film figure{margin:0 auto;max-width:60rem}
+.film video{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#000;box-shadow:var(--shadow)}
+.film figcaption{margin-top:.7rem;text-align:center;font-size:.84rem;color:var(--faint)}
 .section{max-width:72rem;margin:0 auto;padding:1rem 1.5rem 4rem}
 .section-title{text-align:center;font-size:1.5rem;font-weight:700;margin:0 0 2rem;letter-spacing:-.01em}
 .cards{display:grid;grid-template-columns:1fr;gap:1.4rem;max-width:46rem;margin:0 auto}
@@ -53,7 +61,7 @@ a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-hover);tex
 .site-footer a{color:var(--muted)}
 /* language switching: only the selected edition is shown */
 [data-lang="zh"] [data-lang="en"],[data-lang="en"] [data-lang="zh"]{display:none!important}
-@media (max-width:640px){.nav .links{display:none}.hero{padding:3.5rem 1rem 2.5rem}.hero h1{font-size:2.1rem}.section{padding:0 16px 3rem}.card{padding:1.3rem 1.2rem 1.1rem}}
+@media (max-width:640px){.nav .links{display:none}.hero{padding:3.5rem 1rem 2rem}.hero h1{font-size:1.9rem}.section{padding:0 16px 3rem}.card{padding:1.3rem 1.2rem 1.1rem}}
 </style>
 </head>
 <body>
@@ -72,16 +80,23 @@ a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-hover);tex
 </header>
 
 <section class="hero">
-  <h1>Whitepapers</h1>
-  <p class="tagline" data-lang="zh">质子梯度研究白皮书</p>
-  <p class="tagline" data-lang="en">AtomGradient research whitepapers</p>
-  <p class="desc" data-lang="zh">我们围绕端侧持续学习发布研究白皮书：研究立场、已经建立的算法与工程基础，以及下一代 Neural Imprint 的演进方向。</p>
-  <p class="desc" data-lang="en">Research whitepapers on on-device continual learning: our position, the algorithmic and engineering foundations we have established, and the direction of next-generation Neural Imprint.</p>
+{{HERO}}
+</section>
+
+<section class="section film" id="film">
+  <figure data-lang="zh">
+    <video controls playsinline preload="none" poster="film/poster-zh.jpg" aria-label="质子梯度愿景片"><source src="film/vision-zh.mp4" type='video/mp4; codecs="av01.0.08M.08"'></video>
+    <figcaption>愿景片 · 1:43 · 持续学习、设备即智能体与这份白皮书的主张</figcaption>
+  </figure>
+  <figure data-lang="en">
+    <video controls playsinline preload="none" poster="film/poster-en.jpg" aria-label="AtomGradient vision film"><source src="film/vision-en.mp4" type='video/mp4; codecs="av01.0.08M.08"'></video>
+    <figcaption>Vision film · 1:43 · continual learning, every device as an agent, and the ideas in this whitepaper</figcaption>
+  </figure>
 </section>
 
 <section class="section" id="papers">
-  <h2 class="section-title" data-lang="zh">最新发布</h2>
-  <h2 class="section-title" data-lang="en">Latest</h2>
+  <h2 class="section-title" data-lang="zh">全部白皮书</h2>
+  <h2 class="section-title" data-lang="en">All whitepapers</h2>
   <div class="cards">
 {{CARDS}}
   </div>
