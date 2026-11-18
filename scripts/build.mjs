@@ -297,7 +297,52 @@ function buildLanding(built) {
   writeFileSync(resolve(ROOT, "docs/index.html"), page);
 }
 
-const built = papers.map(buildPaper);
+const prebuiltPapers = [
+  {
+    slug: "neural-imprint-v9",
+    path: "neural-imprint-v9/",
+    lang: "zh-CN",
+    ui: UI["zh-CN"],
+    out: "docs/neural-imprint-v9/index.html",
+    pdf: "AtomGradient-Neural-Imprint-V9-Chronos-Tech-Report-zh.pdf",
+    version: "V9 (Chronos)",
+    date: "2026-11-18",
+    published: "2026-11-18",
+    title: "Neural Imprint V9（代号 Chronos）：持续学习的哲学、架构与跨设备普惠实证",
+    shortTitle: "Neural Imprint V9（代号 Chronos）：持续学习的哲学、架构与跨设备普惠实证",
+    subtitle: "技术报告 · 质子梯度（AtomGradIent） · 2026 年 11 月",
+    description: "本报告发布的 Neural Imprint V9（内部代号 Chronos），在架构上实现了“学习”与“推理”的彻底分开，将系统拆解为更新（Update U）— 有界状态（Bounded State S）— 读取（Readout R）三项解耦职责，并在底层内置公钥／私钥加密与授权机制，在横跨 768 倍内存跨度的 21 款实测异构真机上完成实证。",
+    label: "Neural Imprint V9 · Technical Report (Chronos)",
+    highlights: [
+      "学习与推理解耦：主配置有界热状态恒定 3.10 MiB（161.2 倍压缩），独立学习进程峰值仅 11.8–30.7 MiB，无需加载大模型",
+      "跨设备实证：256 MiB 路由器至 192 GiB 工作站共 21 款在线与补测真机；八站异构接力续学 1,000 条经历，终点读出与单机 100% 逐字一致",
+      "严格语义核对与安全基线：587 份生成回答逐句核对（已废除旧习惯 0/587 零错用）；公私钥机制 9/9 拦截越权与篡改；智能体提议，人来决定",
+    ],
+  },
+  {
+    slug: "neural-imprint-v9",
+    path: "neural-imprint-v9/en/",
+    lang: "en",
+    ui: UI["en"],
+    out: "docs/neural-imprint-v9/en/index.html",
+    pdf: "AtomGradient-Neural-Imprint-V9-Chronos-Tech-Report-en.pdf",
+    version: "V9 (Chronos)",
+    date: "2026-11-18",
+    published: "2026-11-18",
+    title: "Neural Imprint V9 (Codenamed Chronos): Philosophy, Architecture, and Cross-Device Empirical Evidence for Continual Learning",
+    shortTitle: "Neural Imprint V9 (Codenamed Chronos): Philosophy, Architecture, and Cross-Device Empirical Evidence for Continual Learning",
+    subtitle: "Technical Report · AtomGradIent (质子梯度) · November 2026",
+    description: "Neural Imprint V9 (internally codenamed Chronos) achieves a complete architectural decoupling of learning from inference (Update U — Bounded State S — Readout R), embeds low-level public/private key encryption and device-grant authorization, and is empirically verified across 21 physical devices spanning a 768× memory range.",
+    label: "Neural Imprint V9 · Technical Report (Chronos)",
+    highlights: [
+      "Learning–inference decoupling: constant 3.10 MiB hot state (161.2× compression), 11.8–30.7 MiB standalone learning peak RSS without loading an LLM",
+      "Cross-device empirical sweep: 21 measured devices from a 256 MiB router to a 192 GiB workstation; 8-hop sequential relay across 1,000 records achieves 100% verbatim readout convergence",
+      "Strict semantic audit & security baseline: 587 outputs audited line-by-line (0/587 superseded-fact leaks); 9/9 unauthorized/tampered loads blocked via public/private key cryptography; agents propose, humans decide",
+    ],
+  },
+];
+
+const built = [...prebuiltPapers, ...papers.map(buildPaper)];
 buildLanding(built);
-for (const b of built) console.log(`built ${b.out}  headings=${b.headings}  sha256=${b.sha.slice(0, 12)}`);
+for (const b of built) if (b.sha) console.log(`built ${b.out}  headings=${b.headings}  sha256=${b.sha.slice(0, 12)}`);
 console.log("built docs/index.html");
