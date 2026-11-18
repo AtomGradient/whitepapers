@@ -254,13 +254,12 @@ function buildLanding(built) {
     .map(
       (b) => `    <article class="card" data-lang="${b.lang === "en" ? "en" : "zh"}">
       <div class="card-label">${escapeHtml(`${b.label} · ${b.ui.langName} · ${b.date}`)}</div>
-      <h3><a href="${b.path}">${escapeHtml(b.title)}</a></h3>
+      <h3><a href="${b.pdfOnly ? b.path + b.pdf : b.path}"${b.pdfOnly ? ' target="_blank" rel="noopener"' : ""}>${escapeHtml(b.title)}</a></h3>
       <p class="sub">${escapeHtml(b.subtitle)}</p>
       <p class="desc">${escapeHtml(b.description)}</p>
       <ul>${b.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}</ul>
       <div class="card-links">
-        <a href="${b.path}">${escapeHtml(b.ui.readOnline)}</a>
-        <a href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>
+        ${b.pdfOnly ? "" : `<a href="${b.path}">${escapeHtml(b.ui.readOnline)}</a>\n        `}<a href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>
       </div>
     </article>`
     )
@@ -279,12 +278,11 @@ function buildLanding(built) {
   const hero = Object.entries(latest)
     .map(([key, b]) => `  <div class="hero-paper" data-lang="${key}">
     <p class="eyebrow">${escapeHtml(eyebrow[key])}</p>
-    <h1><a href="${b.path}">${escapeHtml(b.title)}</a></h1>
+    <h1><a href="${b.pdfOnly ? b.path + b.pdf : b.path}"${b.pdfOnly ? ' target="_blank" rel="noopener"' : ""}>${escapeHtml(b.title)}</a></h1>
     <p class="tagline">${escapeHtml(b.subtitle)}</p>
     <p class="desc">${escapeHtml(b.description)}</p>
     <div class="hero-links">
-      <a class="primary" href="${b.path}">${escapeHtml(b.ui.readOnline)}</a>
-      <a href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>
+      ${b.pdfOnly ? `<a class="primary" href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>` : `<a class="primary" href="${b.path}">${escapeHtml(b.ui.readOnline)}</a>\n      <a href="${b.path}${b.pdf}" target="_blank" rel="noopener">PDF →</a>`}
     </div>
   </div>`)
     .join("\n");
@@ -303,7 +301,7 @@ const prebuiltPapers = [
     path: "neural-imprint-v9/",
     lang: "zh-CN",
     ui: UI["zh-CN"],
-    out: "docs/neural-imprint-v9/index.html",
+    pdfOnly: true,
     pdf: "AtomGradient-Neural-Imprint-V9-Chronos-Tech-Report-zh.pdf",
     version: "V9 (Chronos)",
     date: "2026-11-18",
@@ -324,7 +322,7 @@ const prebuiltPapers = [
     path: "neural-imprint-v9/en/",
     lang: "en",
     ui: UI["en"],
-    out: "docs/neural-imprint-v9/en/index.html",
+    pdfOnly: true,
     pdf: "AtomGradient-Neural-Imprint-V9-Chronos-Tech-Report-en.pdf",
     version: "V9 (Chronos)",
     date: "2026-11-18",
